@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Dorado's Pizza - Interactive Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1B2A4A;
+            --dark-navy: #0F1A2E;
+            --primary-red: #E31B23;
+            --dark-red: #C41018;
+            --white: #FFFFFF;
+            --light-gray: #F8F9FA;
+            --cream: #FAFAFA;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--cream);
+            color: var(--dark-navy);
+            overflow-x: hidden;
+        }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--navy);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .pizza-loader {
+            width: 80px;
+            height: 80px;
+            border: 5px solid var(--white);
+            border-top-color: var(--primary-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Prototype Banner */
+        .prototype-banner {
+            background: var(--primary-red);
+            color: var(--white);
+            text-align: center;
+            padding: 0.5rem 5%;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1001;
+            transition: transform 0.3s ease;
+            animation: pulseBanner 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseBanner {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 30px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0.6rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 0.5rem 5%;
+            background: var(--navy);
+            top: 0;
+        }
+
+        nav.scrolled .nav-links a,
+        nav.scrolled .nav-text,
+        nav.scrolled .logo-text {
+            color: var(--white);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover .logo-img {
+            transform: scale(1.05);
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--navy);
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-navy);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-red);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-red);
+        }
+
+        .cart-btn {
+            background: var(--primary-red);
+            color: var(--white);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .cart-btn:hover {
+            background: var(--dark-red);
+            transform: translateY(-2px);
+        }
+
+        .cart-count {
+            background: var(--white);
+            color: var(--primary-red);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            animation: bounce 0.3s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--dark-navy) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 100px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            opacity: 0.15;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            bottom: -150px;
+            left: -150px;
+            opacity: 0.2;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            color: var(--white);
+            animation: fadeInUp 1s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero h1 span {
+            color: var(--primary-red);
+            display: inline-block;
+            animation: wiggle 3s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-btn {
+            background: var(--primary-red);
+            color: var(--white);
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .hero-btn:hover {
+            background: var(--white);
+            color: var(--navy);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .pizza-float {
+            position: absolute;
+            font-size: 8rem;
+            animation: floatPizza 4s ease-in-out infinite;
+            filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        .pizza-float:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+        .pizza-float:nth-child(2) { top: 60%; right: 10%; animation-delay: 1s; }
+        .pizza-float:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 2s; }
+
+        @keyframes floatPizza {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            75% { transform: translateY(10px) rotate(-5deg); }
+        }
+
+        /* Categories Section */
+        .categories {
+            padding: 5rem 5%;
+            background: var(--white);
+        }
+
+        .section-label {
+            color: var(--primary-red);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--navy);
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-red);
+            border-radius: 2px;
+        }
+
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            padding: 0.8rem 2rem;
+            border: 2px solid var(--navy);
+            background: transparent;
+            color: var(--navy);
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            background: var(--navy);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        /* Carousel Section */
+        .carousel-section {
+            padding: 4rem 0;
+            background: var(--white);
+            overflow: hidden;
+        }
+
+        .carousel-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 5%;
+        }
+
+        .carousel-track {
+            display: flex;
+            width: max-content;
+            animation: scroll 30s linear infinite;
+        }
+
+        .carousel-track:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .carousel-item {
+            flex-shrink: 0;
+            width: 200px;
+            height: 280px;
+            margin: 0 1rem;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .carousel-item:hover {
+            transform: scale(1.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(transparent, rgba(27, 42, 74, 0.8));
+            pointer-events: none;
+        }
+
+        /* Decorative Particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: floatParticle 15s infinite linear;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 12s; }
+        .particle:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 14s; }
+        .particle:nth-child(3) { left: 30%; animation-delay: 4s; animation-duration: 10s; }
+        .particle:nth-child(4) { left: 40%; animation-delay: 1s; animation-duration: 16s; }
+        .particle:nth-child(5) { left: 50%; animation-delay: 3s; animation-duration: 11s; }
+        .particle:nth-child(6) { left: 60%; animation-delay: 5s; animation-duration: 13s; }
+        .particle:nth-child(7) { left: 70%; animation-delay: 0.5s; animation-duration: 15s; }
+        .particle:nth-child(8) { left: 80%; animation-delay: 2.5s; animation-duration: 12s; }
+        .particle:nth-child(9) { left: 90%; animation-delay: 1.5s; animation-duration: 14s; }
+        .particle:nth-child(10) { left: 95%; animation-delay: 4.5s; animation-duration: 11s; }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Wave Dividers */
+        .wave-divider {
+            position: relative;
+            height: 80px;
+            overflow: hidden;
+        }
+
+        .wave-divider svg {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .wave-divider.navy { background: var(--cream); }
+        .wave-divider.white { background: var(--white); }
+        .wave-divider.red { background: var(--light-gray); }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 5%;
+            background: var(--white);
+            position: relative;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--navy), var(--primary-red), var(--navy));
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--navy);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .fake-data-note {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Decorative Dots Pattern */
+        .dots-pattern {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background-image: radial-gradient(var(--primary-red) 2px, transparent 2px);
+            background-size: 20px 20px;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .dots-pattern.top-left { top: 50px; left: 50px; }
+        .dots-pattern.top-right { top: 50px; right: 50px; }
+        .dots-pattern.bottom-left { bottom: 50px; left: 50px; }
+        .dots-pattern.bottom-right { bottom: 50px; right: 50px; }
+
+        /* CTA Banner */
+        .cta-banner {
+            padding: 4rem 5%;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--dark-navy) 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-banner::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            opacity: 0.2;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .cta-banner::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            bottom: -75px;
+            right: -75px;
+            opacity: 0.2;
+            animation: float 5s ease-in-out infinite reverse;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .cta-title span {
+            color: var(--primary-red);
+        }
+
+        .cta-text {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: var(--primary-red);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-red);
+        }
+
+        .cta-btn:hover {
+            background: transparent;
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(227, 27, 35, 0.4);
+        }
+
+        /* Floating Elements */
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .float-item {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.15;
+            animation: floatAround 20s infinite linear;
+        }
+
+        .float-item:nth-child(1) { top: 20%; left: 5%; animation-delay: 0s; }
+        .float-item:nth-child(2) { top: 60%; left: 15%; animation-delay: 3s; }
+        .float-item:nth-child(3) { top: 40%; right: 10%; animation-delay: 6s; }
+        .float-item:nth-child(4) { top: 80%; right: 20%; animation-delay: 9s; }
+        .float-item:nth-child(5) { top: 30%; left: 80%; animation-delay: 12s; }
+
+        @keyframes floatAround {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -20px) rotate(90deg); }
+            50% { transform: translate(0, -40px) rotate(180deg); }
+            75% { transform: translate(-20px, -20px) rotate(270deg); }
+        }
+
+        /* Glow Effect */
+        .glow-effect {
+            position: relative;
+        }
+
+        .glow-effect::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            transform: translate(-50%, -50%);
+            background: var(--primary-red);
+            filter: blur(60px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .glow-effect:hover::before {
+            opacity: 0.15;
+        }
+
+        /* Menu Section */
+        .menu-section {
+            padding: 5rem 5%;
+            background: var(--light-gray);
+            position: relative;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .menu-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            position: relative;
+        }
+
+        .menu-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--navy), var(--primary-red));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .menu-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .menu-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--dark-navy) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .card-badges {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.best-seller {
+            background: var(--primary-red);
+            color: var(--white);
+        }
+
+        .badge.no-pork {
+            background: var(--white);
+            color: var(--navy);
+        }
+
+        .badge.new {
+            background: var(--primary-red);
+            color: var(--white);
+            animation: pulse 1s infinite;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-content h3 {
+            font-size: 1.4rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-content p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .price-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .prices {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .price {
+            background: var(--light-gray);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .price small {
+            font-size: 0.7rem;
+            color: #666;
+            display: block;
+        }
+
+        .add-btn {
+            background: var(--primary-red);
+            color: var(--white);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: var(--dark-red);
+            transform: rotate(90deg);
+        }
+
+        .add-btn.added {
+            background: #28a745;
+            animation: pop 0.3s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* Specials Section */
+        .specials {
+            padding: 5rem 5%;
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .specials::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--white);
+            border-radius: 50%;
+            top: -100px;
+            right: -100px;
+            opacity: 0.1;
+        }
+
+        .specials .section-title h2 {
+            color: var(--white);
+        }
+
+        .specials .section-title h2::after {
+            background: var(--white);
+        }
+
+        .specials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .special-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .special-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-10px);
+        }
+
+        .special-card i {
+            font-size: 3rem;
+            color: var(--white);
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        .special-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .special-card p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: var(--white);
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            transition: right 0.4s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 1.5rem;
+            background: var(--navy);
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            font-size: 1.2rem;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .close-cart:hover {
+            transform: rotate(90deg);
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--light-gray);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .cart-item-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--navy);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-details h4 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .cart-item-details .size {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .cart-item-price {
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .remove-item:hover {
+            color: var(--navy);
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+            background: var(--light-gray);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--navy);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-red);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background: var(--dark-red);
+            transform: translateY(-2px);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .empty-cart i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Cart Overlay */
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cart-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Size Selector Modal */
+        .size-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            min-width: 300px;
+        }
+
+        .size-modal.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .size-modal h3 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--navy);
+        }
+
+        .size-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .size-option {
+            flex: 1;
+            padding: 1.5rem;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .size-option:hover {
+            border-color: var(--navy);
+        }
+
+        .size-option.selected {
+            border-color: var(--navy);
+            background: var(--navy);
+            color: var(--white);
+        }
+
+        .size-option h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .size-option p {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-navy);
+            color: var(--white);
+            padding: 4rem 5% 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-section h4 {
+            color: var(--primary-red);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section p {
+            opacity: 0.8;
+            line-height: 1.8;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-section ul li a {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            opacity: 1;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--white);
+            color: var(--primary-red);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+
+        /* Scroll to Top Button */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--navy);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            background: var(--primary-red);
+            transform: translateY(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            .cta-title {
+                font-size: 1.8rem;
+            }
+
+            .float-item {
+                display: none;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: var(--navy);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast i {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="pizza-loader"></div>
+    </div>
+
+    <!-- Prototype Banner -->
+    <div class="prototype-banner">
+        ⚠️ Prototype Sample - Not Final Product ⚠️
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="logo">
+            <img class="logo-img" src="img/img.png" alt="El Dorado's Pizza Logo">
+            <span class="logo-text">EL DORADO'S</span>
+        </div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#menu">Menu</a>
+            <a href="#specials">Specials</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <button class="cart-btn" onclick="openCart()">
+            <i class="fas fa-shopping-cart"></i> Cart
+            <span class="cart-count" id="cartCount">0</span>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <div class="floating-elements">
+            <span class="float-item">🍕</span>
+            <span class="float-item">🧀</span>
+            <span class="float-item">🌶️</span>
+            <span class="float-item">🍅</span>
+            <span class="float-item">🌿</span>
+        </div>
+        <div class="pizza-float">🍕</div>
+        <div class="pizza-float">🧀</div>
+        <div class="pizza-float">🍕</div>
+        <div class="hero-content">
+            <h1>Freshly-made Handstretch <span>Dough</span></h1>
+            <p>The most mouthwatering and affordable pizza in town!</p>
+            <button class="hero-btn" onclick="document.getElementById('menu').scrollIntoView({behavior: 'smooth'})">
+                Order Now <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        <div class="dots-pattern top-right"></div>
+        <div class="dots-pattern bottom-left"></div>
+    </section>
+
+    <!-- Wave Divider -->
+    <div class="wave-divider navy">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path fill="#1B2A4A" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z"></path>
+        </svg>
+    </div>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number" data-target="29">0</div>
+                <div class="stat-label">Years of Service</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="50000">0</div>
+                <div class="stat-label">Pizzas Served</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="15">0</div>
+                <div class="stat-label">Branches</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="98">0</div>
+                <div class="stat-label">% Happy Customers</div>
+            </div>
+        </div>
+        <p class="fake-data-note">*Sample data for demo purposes</p>
+    </section>
+
+    <!-- Wave Divider -->
+    <div class="wave-divider white">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path fill="#FAFAFA" d="M0,32L48,37.3C96,43,192,53,288,64C384,75,480,85,576,80C672,75,768,53,864,42.7C960,32,1056,32,1152,37.3C1248,43,1344,53,1392,58.7L1440,64L1440,120L0,120Z"></path>
+        </svg>
+    </div>
+
+    <!-- Categories Section -->
+    <section class="categories" id="categories">
+        <div class="section-title">
+            <h2>Our Menu</h2>
+        </div>
+        <div class="category-tabs">
+            <button class="tab-btn active" data-category="all">All Items</button>
+            <button class="tab-btn" data-category="pizza">Pizza</button>
+            <button class="tab-btn" data-category="pasta">Pasta</button>
+            <button class="tab-btn" data-category="sides">Sides & Crust</button>
+            <button class="tab-btn" data-category="desserts">Desserts</button>
+            <button class="tab-btn" data-category="drinks">Drinks</button>
+        </div>
+    </section>
+
+    <!-- Carousel Section -->
+    <section class="carousel-section">
+        <div class="carousel-header">
+            <p class="section-label">Gallery</p>
+            <h2 class="section-title">Our Delicious Pizzas</h2>
+        </div>
+        <div class="carousel-track">
+            <div class="carousel-item"><img src="img/img_1.png" alt="Pizza 1"></div>
+            <div class="carousel-item"><img src="img/img_2.png" alt="Pizza 2"></div>
+            <div class="carousel-item"><img src="img/img_3.png" alt="Pizza 3"></div>
+            <div class="carousel-item"><img src="img/img_4.png" alt="Pizza 4"></div>
+            <div class="carousel-item"><img src="img/img_5.png" alt="Pizza 5"></div>
+            <div class="carousel-item"><img src="img/img_6.png" alt="Pizza 6"></div>
+            <div class="carousel-item"><img src="img/img_7.png" alt="Pizza 7"></div>
+            <div class="carousel-item"><img src="img/img_8.png" alt="Pizza 8"></div>
+            <div class="carousel-item"><img src="img/img_9.png" alt="Pizza 9"></div>
+            <div class="carousel-item"><img src="img/img_10.png" alt="Pizza 10"></div>
+            <div class="carousel-item"><img src="img/img_11.png" alt="Pizza 11"></div>
+            <!-- Duplicated for seamless loop -->
+            <div class="carousel-item"><img src="img/img_1.png" alt="Pizza 1"></div>
+            <div class="carousel-item"><img src="img/img_2.png" alt="Pizza 2"></div>
+            <div class="carousel-item"><img src="img/img_3.png" alt="Pizza 3"></div>
+            <div class="carousel-item"><img src="img/img_4.png" alt="Pizza 4"></div>
+            <div class="carousel-item"><img src="img/img_5.png" alt="Pizza 5"></div>
+            <div class="carousel-item"><img src="img/img_6.png" alt="Pizza 6"></div>
+            <div class="carousel-item"><img src="img/img_7.png" alt="Pizza 7"></div>
+            <div class="carousel-item"><img src="img/img_8.png" alt="Pizza 8"></div>
+            <div class="carousel-item"><img src="img/img_9.png" alt="Pizza 9"></div>
+            <div class="carousel-item"><img src="img/img_10.png" alt="Pizza 10"></div>
+            <div class="carousel-item"><img src="img/img_11.png" alt="Pizza 11"></div>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section class="menu-section" id="menu">
+        <div class="menu-grid" id="menuGrid">
+            <!-- Items will be loaded dynamically -->
+        </div>
+    </section>
+
+    <!-- Specials Section -->
+    <section class="specials" id="specials">
+        <div class="floating-elements">
+            <span class="float-item">⭐</span>
+            <span class="float-item">🏆</span>
+            <span class="float-item">💯</span>
+        </div>
+        <div class="section-title">
+            <h2>Why Choose Us?</h2>
+        </div>
+        <div class="specials-grid">
+            <div class="special-card">
+                <i class="fas fa-fire"></i>
+                <h3>Fresh Ingredients</h3>
+                <p>We use only the freshest ingredients delivered daily</p>
+            </div>
+            <div class="special-card">
+                <i class="fas fa-clock"></i>
+                <h3>Fast Delivery</h3>
+                <p>Hot and fresh pizza delivered in 30 minutes or less</p>
+            </div>
+            <div class="special-card">
+                <i class="fas fa-heart"></i>
+                <h3>Made with Love</h3>
+                <p>Every pizza is handcrafted with passion and care</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Wave Divider -->
+    <div class="wave-divider red">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path fill="#E31B23" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z"></path>
+        </svg>
+    </div>
+
+    <!-- CTA Banner -->
+    <section class="cta-banner">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to <span>Order</span>?</h2>
+            <p class="cta-text">Call us now and get your favorite pizza delivered hot and fresh!</p>
+            <a href="tel:+639123456789" class="cta-btn">
+                <i class="fas fa-phone"></i> Order Now: +63 912 345 6789
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About Us</h4>
+                <p>El Dorado's Pizza has been serving delicious, handcrafted pizzas since 1995. We take pride in our quality ingredients and authentic recipes.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#menu">Menu</a></li>
+                    <li><a href="#specials">Specials</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Info</h4>
+                <p><i class="fas fa-phone"></i> +63 912 345 6789</p>
+                <p><i class="fas fa-envelope"></i> info@coloradopizza.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Pizza Street, Manila</p>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 El Dorado's Pizza. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Your Order</h3>
+            <button class="close-cart" onclick="closeCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart">
+                <i class="fas fa-shopping-basket"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">₱0</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">
+                <i class="fas fa-check"></i> Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Size Modal -->
+    <div class="size-modal" id="sizeModal">
+        <h3>Select Size</h3>
+        <div class="size-options">
+            <div class="size-option" data-size="small" onclick="selectSize('small')">
+                <h4>Small</h4>
+                <p id="smallPrice">₱189</p>
+            </div>
+            <div class="size-option" data-size="large" onclick="selectSize('large')">
+                <h4>Large</h4>
+                <p id="largePrice">₱399</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Item added to cart!</span>
+    </div>
+
+    <script>
+        // Menu Data
+        const menuItems = [
+            // PIZZA
+            { id: 1, name: "Ham and Cheese", category: "pizza", icon: "🍕", description: "Sweet Ham and Mozzarella Cheese", prices: { small: 189, large: 399 }, badges: ["best-seller"] },
+            { id: 2, name: "Bacon and Cheese", category: "pizza", icon: "🍕", description: "Bacon and Mozzarella Cheese", prices: { small: 189, large: 399 } },
+            { id: 3, name: "Pepperoni Cheese", category: "pizza", icon: "🍕", description: "Pepperoni and Mozzarella Cheese", prices: { small: 189, large: 399 } },
+            { id: 4, name: "Margarita", category: "pizza", icon: "🍕", description: "Mozzarella Cheese Only", prices: { small: 189, large: 399 }, badges: ["no-pork"] },
+            { id: 5, name: "Hawaiian", category: "pizza", icon: "🍕", description: "Sweet Ham, Pineapple & Mozzarella Cheese", prices: { small: 199, large: 425 }, badges: ["best-seller"] },
+            { id: 6, name: "Veggie Pizza", category: "pizza", icon: "🥦", description: "Tomato, White Onion, Green Pepper, Fresh Chili, Mozzarella Cheese", prices: { small: 209, large: 479 }, badges: ["no-pork"] },
+            { id: 7, name: "Hot and Spicy", category: "pizza", icon: "🌶️", description: "Beef, Tomato, White Onion, Fresh Chili, and Mozzarella Cheese", prices: { small: 209, large: 479 }, badges: ["no-pork"] },
+            { id: 8, name: "Meat Pizza", category: "pizza", icon: "🥩", description: "Beef Toppings, Sweet Ham, Pepperoni and Mozzarella Cheese", prices: { small: 209, large: 479 } },
+            { id: 9, name: "Sisig Pizza", category: "pizza", icon: "🍖", description: "Pork Sisig, White Onion, Fresh Chili, Mozzarella Cheese, Mayonnaise on Top", prices: { small: 209, large: 479 }, badges: ["best-seller"] },
+            { id: 10, name: "Tuna Pizza", category: "pizza", icon: "🐟", description: "Tuna, Fresh Tomato, White onion, Green Pepper, and Mozzarella Cheese", prices: { small: 209, large: 479 }, badges: ["no-pork"] },
+            { id: 11, name: "Supreme Only", category: "pizza", icon: "⭐", description: "Beef, White onion, Green Pepper, Mushroom and Mozzarella Cheese", prices: { small: 209, large: 499 }, badges: ["no-pork"] },
+            { id: 12, name: "Super Supreme", category: "pizza", icon: "🌟", description: "Beef, Sweet Ham, Pepperoni White onion, Green Pepper, Mushroom and Mozzarella Cheese", prices: { small: 209, large: 499 }, badges: ["best-seller"] },
+            { id: 13, name: "Creamy Spinach", category: "pizza", icon: "🥬", description: "Fresh Spinach, Creamcheese, Parmesan Cheese, Sour & Cream, and Mozzarella Cheese", prices: { small: 209, large: 499 }, badges: ["best-seller", "no-pork"] },
+            { id: 14, name: "Seafood", category: "pizza", icon: "🦐", description: "Marinated Shrimp and Calamares, Fresh Garlic, Mushroom, and Mozzarella Cheese", prices: { small: 209, large: 499 }, badges: ["no-pork"] },
+            { id: 15, name: "Chicken Supreme", category: "pizza", icon: "🍗", description: "White sauce, Marinated Chicken, White onion, Mushroom, Green Pepper and Mozzarella cheese", prices: { small: 209, large: 499 } },
+            { id: 16, name: "Beef Deluxe", category: "pizza", icon: "🥩", description: "Marinated Beef, Onion, Tomato, Mozzarella Cheese and Cheese Sauce on Top", prices: { small: 229, large: 529 }, badges: ["new"] },
+            
+            // PASTA
+            { id: 17, name: "Lasagna with Garlic Bread", category: "pasta", icon: "🍝", description: "Classic lasagna with garlic bread", prices: { regular: 179 }, badges: ["best-seller"] },
+            { id: 18, name: "Fettucine Pasta with Garlic Bread", category: "pasta", icon: "🍝", description: "Creamy fettucine with garlic bread", prices: { regular: 179 }, badges: ["best-seller"] },
+            { id: 19, name: "Tuna Pasta with Garlic Bread", category: "pasta", icon: "🐟", description: "Tuna pasta with garlic bread", prices: { regular: 179 }, badges: ["no-pork"] },
+            { id: 20, name: "Chicken Baked Pasta with Garlic Bread", category: "pasta", icon: "🍗", description: "Chicken baked pasta with garlic bread", prices: { regular: 179 }, badges: ["no-pork"] },
+            
+            // SIDES & CRUST
+            { id: 21, name: "Stuffed Hotdog", category: "sides", icon: "🌭", description: "Stuffed hotdog crust", prices: { large: 569 } },
+            { id: 22, name: "Stuffed Cheese", category: "sides", icon: "🧀", description: "Stuffed cheese crust", prices: { large: 619 } },
+            { id: 23, name: "Mozzarella Cheese", category: "sides", icon: "🧀", description: "Extra mozzarella cheese", prices: { regular: 100 } },
+            { id: 24, name: "Any Toppings", category: "sides", icon: "🍕", description: "Add any topping", prices: { regular: 35 } },
+            { id: 25, name: "Caesar Salad", category: "sides", icon: "🥗", description: "Fresh caesar salad", prices: { regular: 149 }, badges: ["best-seller"] },
+            { id: 26, name: "Fries (220g)", category: "sides", icon: "🍟", description: "Crispy fries", prices: { regular: 89 } },
+            { id: 27, name: "Potato Wedges (230g)", category: "sides", icon: "🥔", description: "Crispy potato wedges", prices: { regular: 129 } },
+            { id: 28, name: "Calamares (100g)", category: "sides", icon: "🦑", description: "Fried calamares", prices: { regular: 149 } },
+            { id: 29, name: "Garlic Bread (4pcs)", category: "sides", icon: "🍞", description: "Garlic bread slices", prices: { regular: 119 } },
+            { id: 30, name: "Buffalo Wings (7pcs)", category: "sides", icon: "🍗", description: "Spicy buffalo wings", prices: { regular: 249 } },
+            
+            // DESSERTS
+            { id: 31, name: "Nutty Nutella", category: "desserts", icon: "🍫", description: "Nutella dessert pizza", prices: { regular: 159 } },
+            { id: 32, name: "Mango Nutella", category: "desserts", icon: "🥭", description: "Mango with Nutella", prices: { regular: 159 } },
+            { id: 33, name: "Cassava Solo", category: "desserts", icon: "🍠", description: "Cassava dessert", prices: { regular: 80 }, badges: ["best-seller"] },
+            { id: 34, name: "Cassava Platter", category: "desserts", icon: "🍠", description: "Cassava platter", prices: { regular: 700 } },
+            { id: 35, name: "Ube Halaya", category: "desserts", icon: "🟣", description: "Ube halaya dessert", prices: { regular: 80 } },
+            
+            // DRINKS
+            { id: 36, name: "Soda Small", category: "drinks", icon: "🥤", description: "Small soda", prices: { regular: 25 } },
+            { id: 37, name: "Soda 1.5 Liter", category: "drinks", icon: "🥤", description: "Large soda bottle", prices: { regular: 99 } },
+            { id: 38, name: "Bottled Water", category: "drinks", icon: "💧", description: "Bottled water", prices: { regular: 25 } },
+            { id: 39, name: "Mango Shake", category: "drinks", icon: "🥭", description: "Fresh mango shake", prices: { regular: 89 } },
+            { id: 40, name: "Guyabano Shake", category: "drinks", icon: "🥝", description: "Guyabano shake", prices: { regular: 89 } },
+            { id: 41, name: "Avocado Shake", category: "drinks", icon: "🥑", description: "Avocado shake (seasonal)", prices: { regular: 89 } }
+        ];
+
+        // Cart State
+        let cart = [];
+        let currentCategory = 'all';
+        let selectedItem = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide preloader
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 1500);
+
+            // Render menu
+            renderMenu();
+
+            // Setup category tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategory = btn.dataset.category;
+                    renderMenu();
+                });
+            });
+
+        // Scroll effects
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            const scrollTop = document.getElementById('scrollTop');
+            const banner = document.querySelector('.prototype-banner');
+            
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+                scrollTop.classList.add('visible');
+                banner.style.transform = 'translateY(-100%)';
+            } else {
+                navbar.classList.remove('scrolled');
+                scrollTop.classList.remove('visible');
+                banner.style.transform = 'translateY(0)';
+            }
+        });
+
+        // Animated Counters
+        const animateCounters = () => {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 2000;
+                const increment = target / (duration / 16);
+                let current = 0;
+
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current).toLocaleString();
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target.toLocaleString() + (target === 98 ? '%' : '+');
+                    }
+                };
+                updateCounter();
+            });
+        };
+
+        // Intersection Observer for animations
+        const observerOptions = { threshold: 0.3 };
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const statsSection = document.querySelector('.stats');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+    });
+
+        // Render Menu
+        function renderMenu() {
+            const grid = document.getElementById('menuGrid');
+            const filtered = currentCategory === 'all' 
+                ? menuItems 
+                : menuItems.filter(item => item.category === currentCategory);
+            
+            grid.innerHTML = filtered.map((item, index) => `
+                <div class="menu-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="card-image">
+                        <span>${item.icon}</span>
+                        ${item.badges ? `
+                            <div class="card-badges">
+                                ${item.badges.includes('best-seller') ? '<span class="badge best-seller">Best Seller</span>' : ''}
+                                ${item.badges.includes('no-pork') ? '<span class="badge no-pork">No Pork</span>' : ''}
+                                ${item.badges.includes('new') ? '<span class="badge new">New</span>' : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="card-content">
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                        <div class="price-section">
+                            <div class="prices">
+                                ${Object.entries(item.prices).map(([size, price]) => `
+                                    <div class="price">
+                                        <small>${size.charAt(0).toUpperCase() + size.slice(1)}</small>
+                                        ₱${price}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="add-btn" onclick="addToCart(${item.id})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Animate cards
+            setTimeout(() => {
+                document.querySelectorAll('.menu-card').forEach((card, index) => {
+                    setTimeout(() => card.classList.add('visible'), index * 100);
+                });
+            }, 100);
+        }
+
+        // Add to Cart
+        function addToCart(itemId) {
+            selectedItem = menuItems.find(item => item.id === itemId);
+            
+            if (selectedItem.prices.small) {
+                document.getElementById('smallPrice').textContent = `₱${selectedItem.prices.small}`;
+                document.getElementById('largePrice').textContent = `₱${selectedItem.prices.large}`;
+                document.getElementById('sizeModal').classList.add('open');
+            } else {
+                // Single size item
+                const cartItem = {
+                    ...selectedItem,
+                    selectedSize: Object.keys(selectedItem.prices)[0],
+                    selectedPrice: Object.values(selectedItem.prices)[0]
+                };
+                cart.push(cartItem);
+                updateCart();
+                showToast(`${selectedItem.name} added to cart!`);
+                
+                // Button animation
+                const btn = event.currentTarget;
+                btn.classList.add('added');
+                setTimeout(() => btn.classList.remove('added'), 300);
+            }
+        }
+
+        // Select Size
+        function selectSize(size) {
+            const cartItem = {
+                ...selectedItem,
+                selectedSize: size,
+                selectedPrice: selectedItem.prices[size]
+            };
+            cart.push(cartItem);
+            updateCart();
+            showToast(`${selectedItem.name} (${size}) added to cart!`);
+            document.getElementById('sizeModal').classList.remove('open');
+        }
+
+        // Update Cart
+        function updateCart() {
+            const cartCount = document.getElementById('cartCount');
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            cartCount.textContent = cart.length;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+            } else {
+                cartItems.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item">
+                        <div class="cart-item-icon">${item.icon}</div>
+                        <div class="cart-item-details">
+                            <h4>${item.name}</h4>
+                            <p class="size">${item.selectedSize}</p>
+                        </div>
+                        <span class="cart-item-price">₱${item.selectedPrice}</span>
+                        <button class="remove-item" onclick="removeFromCart(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            const total = cart.reduce((sum, item) => sum + item.selectedPrice, 0);
+            cartTotal.textContent = `₱${total}`;
+        }
+
+        // Remove from Cart
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        // Open/Close Cart
+        function openCart() {
+            document.getElementById('cartSidebar').classList.add('open');
+            document.getElementById('cartOverlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCart() {
+            document.getElementById('cartSidebar').classList.remove('open');
+            document.getElementById('cartOverlay').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // Checkout
+        function checkout() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!');
+                return;
+            }
+            const total = cart.reduce((sum, item) => sum + item.selectedPrice, 0);
+            alert(`Order placed! Total: ₱${total}\n\nThank you for ordering from El Dorado's Pizza!`);
+            cart = [];
+            updateCart();
+            closeCart();
+        }
+
+        // Show Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Close size modal when clicking outside
+        document.getElementById('sizeModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('sizeModal')) {
+                document.getElementById('sizeModal').classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

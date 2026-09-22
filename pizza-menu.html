@@ -2193,6 +2193,14 @@
 
         .size-options + .opt-label { margin-top: 1.5rem; }
 
+        .opt-hint {
+            font-size: .64rem;
+            font-weight: 500;
+            letter-spacing: .5px;
+            text-transform: none;
+            color: var(--primary-red);
+        }
+
         .size-option.selected {
             border-color: var(--primary-red);
             background: linear-gradient(135deg, rgba(227,27,35,.1), var(--surface) 70%);
@@ -2651,7 +2659,7 @@
                 <div class="process-card reveal reveal-delay-1">
                     <div class="process-icon"><i class="fas fa-pizza-slice"></i></div>
                     <h3>Customize Your Order</h3>
-                    <p>Pick your size (7" or 12") and your cut — 8, 10, 12 or 16 slices, square cut or party cut.</p>
+                    <p>Pick your size — small is cut into 4 slices standard, large into 8 — or choose a modified cut: 10, 12 or 16 slices, square cut or party cut.</p>
                 </div>
                 <div class="process-card reveal reveal-delay-2">
                     <div class="process-icon"><i class="fas fa-fire-burner"></i></div>
@@ -2919,8 +2927,9 @@
                     <div class="size-dim">12 inches · Handstretch</div>
                 </div>
             </div>
-            <div class="opt-label" id="sliceLabel">2 · Choose your cut</div>
+            <div class="opt-label" id="sliceLabel">2 · Choose your cut <span class="opt-hint" id="sliceHint"></span></div>
             <div class="slice-options" id="sliceOptions">
+                <button type="button" class="slice-chip" data-slice="4 Slices" onclick="pickSlice('4 Slices')">4 Slices</button>
                 <button type="button" class="slice-chip" data-slice="8 Slices" onclick="pickSlice('8 Slices')">8 Slices</button>
                 <button type="button" class="slice-chip" data-slice="10 Slices" onclick="pickSlice('10 Slices')">10 Slices</button>
                 <button type="button" class="slice-chip" data-slice="12 Slices" onclick="pickSlice('12 Slices')">12 Slices</button>
@@ -3018,6 +3027,7 @@
         let pendingItem = null;
         let pendingSize = null;
         let pendingSlice = null;
+        let sliceTouched = false;
 
         /* ============ INIT ============ */
         document.addEventListener('DOMContentLoaded', () => {
@@ -3256,12 +3266,14 @@
                 pendingItem = item;
                 pendingSize = null;
                 pendingSlice = null;
+                sliceTouched = false;
                 const isPizza = item.category === 'pizza';
                 document.getElementById('sizeModalItem').textContent = item.name;
                 document.getElementById('smallPrice').textContent = '₱' + item.prices.small;
                 document.getElementById('largePrice').textContent = '₱' + item.prices.large;
                 document.getElementById('sliceLabel').style.display = isPizza ? '' : 'none';
                 document.getElementById('sliceOptions').style.display = isPizza ? '' : 'none';
+                document.getElementById('sliceHint').textContent = '';
                 document.querySelectorAll('.size-option').forEach(o => o.classList.remove('selected'));
                 document.querySelectorAll('.slice-chip').forEach(o => o.classList.remove('selected'));
                 updateModalBtn();
@@ -3286,13 +3298,32 @@
         function pickSize(size) {
             pendingSize = size;
             document.querySelectorAll('.size-option').forEach(o => o.classList.toggle('selected', o.dataset.size === size));
+            // Default cut unless the customer already chose a modified cut
+            if (!sliceTouched) {
+                applySliceChoice(size === 'small' ? '4 Slices' : '8 Slices');
+            } else {
+                updateSliceHint();
+            }
             updateModalBtn();
         }
 
         function pickSlice(slice) {
+            sliceTouched = true;
+            applySliceChoice(slice);
+        }
+
+        function applySliceChoice(slice) {
             pendingSlice = slice;
             document.querySelectorAll('.slice-chip').forEach(o => o.classList.toggle('selected', o.dataset.slice === slice));
+            updateSliceHint();
             updateModalBtn();
+        }
+
+        function updateSliceHint() {
+            const hint = document.getElementById('sliceHint');
+            if (!hint) return;
+            if (!pendingSize) { hint.textContent = ''; return; }
+            hint.textContent = sliceTouched ? 'custom cut' : 'standard: ' + pendingSlice.toLowerCase();
         }
 
         function updateModalBtn() {
@@ -3427,6 +3458,7 @@
             pendingItem = null;
             pendingSize = null;
             pendingSlice = null;
+            sliceTouched = false;
             document.body.style.overflow = '';
         }
 

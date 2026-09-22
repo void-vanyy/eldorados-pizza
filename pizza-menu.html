@@ -2522,6 +2522,39 @@
             color: var(--primary-red);
         }
 
+        /* Half & Half */
+        .half-note {
+            font-size: .76rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: .1rem 0 .3rem;
+        }
+
+        .half-price {
+            display: none;
+            background: rgba(245,197,24,.12);
+            border: 1.5px dashed rgba(245,197,24,.55);
+            color: var(--text);
+            border-radius: 12px;
+            padding: .6rem .9rem;
+            font-size: .85rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: .4rem;
+        }
+
+        .half-price strong { color: var(--primary-red); font-size: 1.05rem; }
+
+        .deal-select:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .half-pill {
+            background: rgba(245,197,24,.16);
+            color: #A67C00;
+        }
+
         /* ============ TOAST ============ */
         .toast {
             position: fixed;
@@ -2620,6 +2653,8 @@
         [data-theme="dark"] .review-card::before { color: rgba(227,27,35,.2); }
 
         [data-theme="dark"] .drawer-empty i { color: rgba(255,255,255,.14); }
+
+        [data-theme="dark"] .half-pill { color: var(--gold); }
 
         [data-theme="dark"] .btn-dark {
             background: rgba(255,255,255,.1);
@@ -3212,6 +3247,14 @@
                 <button type="button" class="slice-chip" data-slice="Square Cut" onclick="pickSlice('Square Cut')">Square Cut</button>
                 <button type="button" class="slice-chip" data-slice="Party Cut" onclick="pickSlice('Party Cut')">Party Cut</button>
             </div>
+            <div id="halfSection">
+                <div class="opt-label">3 · Half &amp; Half (Large only)</div>
+                <select class="deal-select" id="halfSelect" onchange="pickHalf()" disabled>
+                    <option value="">No thanks — single flavor</option>
+                </select>
+                <p class="half-note" id="halfNote">Large only — select Large to enable.</p>
+                <p class="half-price" id="halfPriceLine"></p>
+            </div>
             <button type="button" class="modal-add-btn" id="modalAddBtn" onclick="confirmCustomize()" disabled>Select size &amp; cut</button>
         </div>
     </div>
@@ -3335,6 +3378,7 @@
         let pendingSize = null;
         let pendingSlice = null;
         let sliceTouched = false;
+        let pendingHalf = null;
 
         /* ============ INIT ============ */
         document.addEventListener('DOMContentLoaded', () => {
@@ -3575,6 +3619,7 @@
                 pendingSize = null;
                 pendingSlice = null;
                 sliceTouched = false;
+                pendingHalf = null;
                 const isPizza = item.category === 'pizza';
                 document.getElementById('sizeModalItem').textContent = item.name;
                 document.getElementById('smallPrice').textContent = '₱' + item.prices.small;
@@ -3582,6 +3627,8 @@
                 document.getElementById('sliceLabel').style.display = isPizza ? '' : 'none';
                 document.getElementById('sliceOptions').style.display = isPizza ? '' : 'none';
                 document.getElementById('sliceHint').textContent = '';
+                document.getElementById('halfSection').style.display = isPizza ? '' : 'none';
+                setupHalfSelect(item);
                 document.querySelectorAll('.size-option').forEach(o => o.classList.remove('selected'));
                 document.querySelectorAll('#sliceOptions .slice-chip').forEach(o => o.classList.remove('selected'));
                 updateModalBtn();
@@ -3612,6 +3659,7 @@
             } else {
                 updateSliceHint();
             }
+            updateHalfNote();
             updateModalBtn();
         }
 
@@ -3634,6 +3682,63 @@
             hint.textContent = sliceTouched ? 'custom cut' : 'standard: ' + pendingSlice.toLowerCase();
         }
 
+        /* ---- Half & Half ---- */
+        function setupHalfSelect(baseItem) {
+            const sel = document.getElementById('halfSelect');
+            sel.innerHTML = '<option value="">No thanks — single flavor</option>';
+            menuItems
+                .filter(i => i.category === 'pizza' && i.name !== baseItem.name)
+                .forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.name;
+                    opt.textContent = `${p.name} — Large ₱${p.prices.large}`;
+                    sel.appendChild(opt);
+                });
+            sel.value = '';
+            document.getElementById('halfPriceLine').style.display = 'none';
+            document.getElementById('halfNote').textContent = 'Large only — select Large to enable.';
+        }
+
+        function pickHalf() {
+            const sel = document.getElementById('halfSelect');
+            pendingHalf = sel.value || null;
+            updateHalfNote();
+            updateModalBtn();
+        }
+
+        function getCustomPrice() {
+            if (!pendingItem || !pendingSize) return 0;
+            if (pendingHalf && pendingSize === 'large') {
+                const halfItem = menuItems.find(i => i.name === pendingHalf);
+                if (halfItem) return Math.max(pendingItem.prices.large, halfItem.prices.large);
+            }
+            return pendingItem.prices[pendingSize];
+        }
+
+        function updateHalfNote() {
+            const sel = document.getElementById('halfSelect');
+            const note = document.getElementById('halfNote');
+            const priceLine = document.getElementById('halfPriceLine');
+            if (!sel || !note || !priceLine) return;
+            const isLarge = pendingSize === 'large';
+            sel.disabled = !isLarge;
+            if (!isLarge) {
+                sel.value = '';
+                pendingHalf = null;
+                note.textContent = 'Large only — select Large to enable.';
+                priceLine.style.display = 'none';
+                return;
+            }
+            if (pendingHalf) {
+                note.textContent = 'Nice pick! You pay the higher flavor\u2019s price.';
+                priceLine.innerHTML = 'Half &amp; Half total: <strong>₱' + getCustomPrice() + '</strong>';
+                priceLine.style.display = 'block';
+            } else {
+                note.textContent = 'Optional — pick a 2nd flavor to split this pizza half & half.';
+                priceLine.style.display = 'none';
+            }
+        }
+
         function updateModalBtn() {
             const btn = document.getElementById('modalAddBtn');
             if (!pendingItem) return;
@@ -3641,7 +3746,7 @@
             const ready = pendingSize && (!needsSlice || pendingSlice);
             btn.disabled = !ready;
             if (ready) {
-                btn.innerHTML = '<i class="fas fa-shopping-bag"></i> Add to Cart — ₱' + pendingItem.prices[pendingSize];
+                btn.innerHTML = '<i class="fas fa-shopping-bag"></i> Add to Cart — ₱' + getCustomPrice();
             } else if (needsSlice) {
                 btn.textContent = 'Select size & cut';
             } else {
@@ -3654,31 +3759,37 @@
             if (pendingItem.category === 'pizza' && !pendingSlice) return;
             const item = pendingItem;
             const slices = item.category === 'pizza' ? pendingSlice : null;
-            pushToCart(item, pendingSize, item.prices[pendingSize], slices);
+            const isHalf = !!(pendingHalf && pendingSize === 'large');
+            const displayName = isHalf ? `Half & Half: ${item.name} / ${pendingHalf}` : item.name;
+            const price = isHalf ? getCustomPrice() : item.prices[pendingSize];
+            pushToCart(item, pendingSize, price, slices, displayName, isHalf);
             pendingItem = null;
             pendingSize = null;
             pendingSlice = null;
+            pendingHalf = null;
             closeSizeModal();
         }
 
-        function pushToCart(item, size, price, slices) {
-            const existing = cart.find(c => c.id === item.id && c.size === size && c.slices === slices);
+        function pushToCart(item, size, price, slices, displayName, isHalf) {
+            const name = displayName || item.name;
+            const existing = cart.find(c => c.id === item.id && c.size === size && c.slices === slices && c.name === name);
             if (existing) {
                 existing.qty += 1;
             } else {
                 cart.push({
                     key: item.id + '-' + size + '-' + (slices || 'none') + '-' + Date.now(),
                     id: item.id,
-                    name: item.name,
+                    name,
                     icon: item.icon,
                     size,
                     slices: slices || null,
+                    half: !!isHalf,
                     price,
                     qty: 1
                 });
             }
             renderCart();
-            showToast(`${item.name} (${size}${slices ? ' · ' + slices : ''}) added to cart`);
+            showToast(`${name} (${size}${slices ? ' · ' + slices : ''}) added to cart`);
             bumpCart();
         }
 
@@ -3730,6 +3841,7 @@
                         <div class="cart-meta">
                             <span class="size-pill">${c.size}</span>
                             ${c.slices ? `<span class="size-pill slice-pill">${c.slices}</span>` : ''}
+                            ${c.half ? '<span class="size-pill half-pill">½ + ½</span>' : ''}
                             ${c.promo ? '<span class="size-pill promo-pill">Free 1.5L</span>' : ''}
                             <span>₱${c.price}</span>
                         </div>
@@ -3768,6 +3880,7 @@
             pendingSize = null;
             pendingSlice = null;
             sliceTouched = false;
+            pendingHalf = null;
             document.body.style.overflow = '';
         }
 

@@ -2576,11 +2576,67 @@
 
         .deal-pizza-group .deal-select { margin-bottom: 0; }
 
-        .deal-half-row {
+        .deal-half-toggle {
             display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .45rem;
+            width: 100%;
+            margin-top: .6rem;
+            padding: .55rem 1rem;
+            border: 1.5px dashed rgba(245,197,24,.6);
+            background: rgba(245,197,24,.08);
+            color: #A67C00;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: .8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .3s var(--ease-out);
+        }
+
+        .deal-half-toggle span { font-size: 1rem; line-height: 1; }
+
+        .deal-half-toggle:hover:not(:disabled) {
+            background: rgba(245,197,24,.18);
+            border-color: var(--gold);
+            transform: translateY(-1px);
+        }
+
+        .deal-half-toggle:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .deal-half-toggle.is-hidden { display: none; }
+
+        .deal-half-row {
+            display: none;
             align-items: center;
             gap: .55rem;
             margin-top: .6rem;
+        }
+
+        .deal-half-row.open { display: flex; }
+
+        .deal-half-cancel {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border: 1.5px solid var(--border-strong);
+            background: var(--surface);
+            color: var(--text-muted);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: all .3s ease;
+        }
+
+        .deal-half-cancel:hover {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: var(--white);
         }
 
         .deal-half-tag {
@@ -2713,6 +2769,11 @@
         [data-theme="dark"] .half-pill { color: var(--gold); }
 
         [data-theme="dark"] .deal-half-tag { color: var(--gold); }
+
+        [data-theme="dark"] .deal-half-toggle {
+            color: var(--gold);
+            background: rgba(245,197,24,.1);
+        }
 
         [data-theme="dark"] .btn-dark {
             background: rgba(255,255,255,.1);
@@ -3332,11 +3393,15 @@
                 <select class="deal-select" id="dealPizza1" onchange="dealPizzaChanged(1)">
                     <option value="">Choose 1st pizza...</option>
                 </select>
-                <div class="deal-half-row">
+                <button type="button" class="deal-half-toggle" id="dealHalfBtn1" onclick="toggleDealHalf(1)" disabled>
+                    <span>½</span> Make it half &amp; half
+                </button>
+                <div class="deal-half-row" id="dealHalfRow1">
                     <span class="deal-half-tag">½ + ½</span>
                     <select class="deal-select deal-half-select" id="dealHalf1" onchange="updateDealBtn()" disabled>
-                        <option value="">Full pizza — single flavor</option>
+                        <option value="">Choose the other half...</option>
                     </select>
+                    <button type="button" class="deal-half-cancel" onclick="toggleDealHalf(1)" aria-label="Remove half and half">&times;</button>
                 </div>
             </div>
 
@@ -3345,15 +3410,19 @@
                 <select class="deal-select" id="dealPizza2" onchange="dealPizzaChanged(2)">
                     <option value="">Choose 2nd pizza...</option>
                 </select>
-                <div class="deal-half-row">
+                <button type="button" class="deal-half-toggle" id="dealHalfBtn2" onclick="toggleDealHalf(2)" disabled>
+                    <span>½</span> Make it half &amp; half
+                </button>
+                <div class="deal-half-row" id="dealHalfRow2">
                     <span class="deal-half-tag">½ + ½</span>
                     <select class="deal-select deal-half-select" id="dealHalf2" onchange="updateDealBtn()" disabled>
-                        <option value="">Full pizza — single flavor</option>
+                        <option value="">Choose the other half...</option>
                     </select>
+                    <button type="button" class="deal-half-cancel" onclick="toggleDealHalf(2)" aria-label="Remove half and half">&times;</button>
                 </div>
             </div>
 
-            <p class="half-note deal-half-note">Split either pizza into two flavors — the bundle stays <strong>₱799</strong>. Beef Deluxe cannot be split.</p>
+            <p class="half-note deal-half-note">Tap <strong>½ Make it half &amp; half</strong> under a pizza to split it — the bundle stays <strong>₱799</strong>. Beef Deluxe cannot be split.</p>
 
             <div class="opt-label">Cut for both pizzas <span class="opt-hint" id="dealSliceHint">standard: 8 slices</span></div>
             <div class="slice-options" id="dealSliceOptions">
@@ -4048,30 +4117,64 @@
         function refreshDealHalf(idx) {
             const mainSel = document.getElementById('dealPizza' + idx);
             const halfSel = document.getElementById('dealHalf' + idx);
+            const btn = document.getElementById('dealHalfBtn' + idx);
+            const row = document.getElementById('dealHalfRow' + idx);
             const main = mainSel.value;
             const prev = halfSel.value;
+
             if (!main) {
-                halfSel.innerHTML = '<option value="">Full pizza — single flavor</option>';
+                halfSel.innerHTML = '<option value="">Choose a pizza first</option>';
                 halfSel.disabled = true;
+                btn.disabled = true;
+                btn.innerHTML = '<span>½</span> Make it half &amp; half';
+                row.classList.remove('open');
+                btn.classList.remove('is-hidden');
                 return;
             }
+
             if (main === 'Beef Deluxe') {
                 halfSel.innerHTML = '<option value="">Beef Deluxe cannot be split in this promo</option>';
                 halfSel.disabled = true;
                 halfSel.value = '';
+                btn.disabled = true;
+                btn.innerHTML = '<span>½</span> Beef Deluxe cannot be split';
+                row.classList.remove('open');
+                btn.classList.remove('is-hidden');
                 return;
             }
-            halfSel.innerHTML = '<option value="">Full pizza — single flavor</option>';
+
+            halfSel.disabled = false;
+            halfSel.innerHTML = '<option value="">Choose the other half...</option>';
             menuItems
                 .filter(i => i.category === 'pizza' && i.name !== 'Beef Deluxe' && i.name !== main)
                 .forEach(p => {
                     const opt = document.createElement('option');
                     opt.value = p.name;
-                    opt.textContent = '½ ' + p.name;
+                    opt.textContent = main + ' / ' + p.name;
                     halfSel.appendChild(opt);
                 });
             halfSel.value = [...halfSel.options].some(o => o.value === prev) ? prev : '';
-            halfSel.disabled = false;
+            btn.disabled = false;
+            btn.innerHTML = '<span>½</span> Make it half &amp; half';
+        }
+
+        function toggleDealHalf(idx) {
+            const btn = document.getElementById('dealHalfBtn' + idx);
+            const row = document.getElementById('dealHalfRow' + idx);
+            const sel = document.getElementById('dealHalf' + idx);
+            const open = row.classList.contains('open');
+            if (open) {
+                row.classList.remove('open');
+                sel.value = '';
+                btn.classList.remove('is-hidden');
+            } else {
+                refreshDealHalf(idx);
+                if (btn.disabled) return;
+                row.classList.add('open');
+                btn.classList.add('is-hidden');
+                sel.focus();
+            }
+            updateDealBtn();
         }
 
         function updateDealBtn() {

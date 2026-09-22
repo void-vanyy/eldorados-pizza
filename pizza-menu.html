@@ -2555,6 +2555,18 @@
             color: #A67C00;
         }
 
+        /* Promo deal half & half */
+        .deal-half-select {
+            border-style: dashed;
+            border-color: rgba(245,197,24,.55);
+            background: rgba(245,197,24,.05);
+            font-size: .85rem;
+        }
+
+        .deal-half-note {
+            margin: .2rem 0 1.1rem;
+        }
+
         /* ============ TOAST ============ */
         .toast {
             position: fixed;
@@ -3268,12 +3280,19 @@
             <p>Pick any 2 large pizzas — your FREE 1.5L softdrinks is automatically included.</p>
 
             <div class="opt-label">Pick your pizzas</div>
-            <select class="deal-select" id="dealPizza1" onchange="updateDealBtn()">
+            <select class="deal-select" id="dealPizza1" onchange="dealPizzaChanged(1)">
                 <option value="">Choose 1st pizza...</option>
             </select>
-            <select class="deal-select" id="dealPizza2" onchange="updateDealBtn()">
+            <select class="deal-select deal-half-select" id="dealHalf1" onchange="updateDealBtn()" disabled>
+                <option value="">Full pizza — single flavor</option>
+            </select>
+            <select class="deal-select" id="dealPizza2" onchange="dealPizzaChanged(2)">
                 <option value="">Choose 2nd pizza...</option>
             </select>
+            <select class="deal-select deal-half-select" id="dealHalf2" onchange="updateDealBtn()" disabled>
+                <option value="">Full pizza — single flavor</option>
+            </select>
+            <p class="half-note deal-half-note">Optional: make either pizza half &amp; half — still ₱799. Beef Deluxe cannot be split in this promo.</p>
 
             <div class="opt-label">Cut for both pizzas <span class="opt-hint" id="dealSliceHint">standard: 8 slices</span></div>
             <div class="slice-options" id="dealSliceOptions">
@@ -3939,6 +3958,8 @@
         function openDealModal() {
             document.getElementById('dealPizza1').value = '';
             document.getElementById('dealPizza2').value = '';
+            refreshDealHalf(1);
+            refreshDealHalf(2);
             dealSlice = '8 Slices';
             document.querySelectorAll('#dealSliceOptions .slice-chip').forEach(c => c.classList.toggle('selected', c.dataset.slice === dealSlice));
             document.getElementById('dealSliceHint').textContent = 'standard: 8 slices';
@@ -3958,6 +3979,40 @@
             document.getElementById('dealSliceHint').textContent = slice === '8 Slices' ? 'standard: 8 slices' : 'custom cut';
         }
 
+        function dealPizzaChanged(idx) {
+            refreshDealHalf(idx);
+            updateDealBtn();
+        }
+
+        function refreshDealHalf(idx) {
+            const mainSel = document.getElementById('dealPizza' + idx);
+            const halfSel = document.getElementById('dealHalf' + idx);
+            const main = mainSel.value;
+            const prev = halfSel.value;
+            if (!main) {
+                halfSel.innerHTML = '<option value="">Full pizza — single flavor</option>';
+                halfSel.disabled = true;
+                return;
+            }
+            if (main === 'Beef Deluxe') {
+                halfSel.innerHTML = '<option value="">Beef Deluxe cannot be split in this promo</option>';
+                halfSel.disabled = true;
+                halfSel.value = '';
+                return;
+            }
+            halfSel.innerHTML = '<option value="">Full pizza — single flavor</option>';
+            menuItems
+                .filter(i => i.category === 'pizza' && i.name !== 'Beef Deluxe' && i.name !== main)
+                .forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.name;
+                    opt.textContent = `${p.name} — Large ₱${p.prices.large}`;
+                    halfSel.appendChild(opt);
+                });
+            halfSel.value = [...halfSel.options].some(o => o.value === prev) ? prev : '';
+            halfSel.disabled = false;
+        }
+
         function updateDealBtn() {
             const p1 = document.getElementById('dealPizza1').value;
             const p2 = document.getElementById('dealPizza2').value;
@@ -3971,7 +4026,10 @@
             const p1 = document.getElementById('dealPizza1').value;
             const p2 = document.getElementById('dealPizza2').value;
             if (!p1 || !p2) return;
-            const name = `PROMO: ${p1} + ${p2}`;
+            const h1 = p1 === 'Beef Deluxe' ? '' : document.getElementById('dealHalf1').value;
+            const h2 = p2 === 'Beef Deluxe' ? '' : document.getElementById('dealHalf2').value;
+            const fmt = (main, half) => half ? `½ ${main} / ½ ${half}` : main;
+            const name = `PROMO: ${fmt(p1, h1)} + ${fmt(p2, h2)}`;
             const existing = cart.find(c => c.promo && c.name === name && c.slices === dealSlice);
             if (existing) {
                 existing.qty += 1;
@@ -3983,6 +4041,7 @@
                     icon: '🎉',
                     size: 'large',
                     slices: dealSlice,
+                    half: !!(h1 || h2),
                     promo: true,
                     price: 799,
                     qty: 1

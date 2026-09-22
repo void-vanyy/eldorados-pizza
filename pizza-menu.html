@@ -2070,6 +2070,8 @@
             border-radius: 28px;
             padding: 2.4rem;
             width: min(460px, 100%);
+            max-height: calc(100dvh - 3rem);
+            overflow-y: auto;
             transform: translateY(24px) scale(.96);
             transition: all .45s var(--ease-spring);
             position: relative;
@@ -2168,6 +2170,111 @@
         }
 
         .size-option:hover .size-price { color: var(--primary-red); }
+
+        /* ============ CUSTOMIZE MODAL (SIZE + CUT) ============ */
+        .opt-label {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 0 0 .75rem;
+        }
+
+        .opt-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-soft);
+        }
+
+        .size-options + .opt-label { margin-top: 1.5rem; }
+
+        .size-option.selected {
+            border-color: var(--primary-red);
+            background: linear-gradient(135deg, rgba(227,27,35,.1), var(--surface) 70%);
+            box-shadow: 0 10px 26px rgba(227,27,35,.15);
+        }
+
+        .size-option.selected .size-price { color: var(--primary-red); }
+
+        .size-option.selected .size-name::after { content: ' ✓'; color: var(--primary-red); }
+
+        .slice-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+
+        .slice-chip {
+            padding: .55rem 1rem;
+            border: 1.5px solid var(--border-strong);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 100px;
+            font-size: .8rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all .3s var(--ease-out);
+        }
+
+        .slice-chip:hover {
+            border-color: var(--primary-red);
+            color: var(--primary-red);
+            transform: translateY(-2px);
+        }
+
+        .slice-chip.selected {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: var(--white);
+            box-shadow: 0 6px 16px rgba(227,27,35,.35);
+        }
+
+        .slice-chip.selected:hover { color: var(--white); }
+
+        .modal-add-btn {
+            width: 100%;
+            margin-top: 1.6rem;
+            padding: 1.05rem;
+            border: none;
+            border-radius: 16px;
+            background: var(--primary-red);
+            color: var(--white);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: .98rem;
+            cursor: pointer;
+            transition: all .3s var(--ease-out);
+            box-shadow: 0 10px 26px rgba(227,27,35,.32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .6rem;
+        }
+
+        .modal-add-btn:hover:not(:disabled) {
+            background: var(--dark-red);
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(227,27,35,.42);
+        }
+
+        .modal-add-btn:disabled {
+            background: var(--surface-alt);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            border: 1px solid var(--border-soft);
+        }
+
+        .slice-pill {
+            background: rgba(227,27,35,.12);
+            color: var(--primary-red);
+        }
 
         /* ============ TOAST ============ */
         .toast {
@@ -2544,7 +2651,7 @@
                 <div class="process-card reveal reveal-delay-1">
                     <div class="process-icon"><i class="fas fa-pizza-slice"></i></div>
                     <h3>Customize Your Order</h3>
-                    <p>Choose your size — Small 7" or Large 12" — and add extra toppings if you like.</p>
+                    <p>Pick your size (7" or 12") and your cut — 8, 10, 12 or 16 slices, square cut or party cut.</p>
                 </div>
                 <div class="process-card reveal reveal-delay-2">
                     <div class="process-icon"><i class="fas fa-fire-burner"></i></div>
@@ -2792,25 +2899,36 @@
         </div>
     </aside>
 
-    <!-- ============ SIZE MODAL ============ -->
+    <!-- ============ SIZE / CUT MODAL ============ -->
     <div class="modal-backdrop" id="sizeModal" onclick="if(event.target===this)closeSizeModal()">
         <div class="modal">
             <button class="modal-close" onclick="closeSizeModal()" aria-label="Close">&times;</button>
-            <div class="modal-icon"><i class="fas fa-ruler-combined"></i></div>
-            <h3>Choose Your Size</h3>
-            <p id="sizeModalItem">Select the perfect size for your pizza.</p>
+            <div class="modal-icon"><i class="fas fa-pizza-slice"></i></div>
+            <h3>Customize Your Pizza</h3>
+            <p id="sizeModalItem">Choose your size and how you want it cut.</p>
+            <div class="opt-label">1 · Choose size</div>
             <div class="size-options">
-                <div class="size-option" onclick="selectSize('small')">
+                <div class="size-option" data-size="small" onclick="pickSize('small')">
                     <div class="size-name">Small</div>
                     <div class="size-price" id="smallPrice">₱189</div>
-                    <div class="size-dim">7 inches · 4 slices</div>
+                    <div class="size-dim">7 inches · Handstretch</div>
                 </div>
-                <div class="size-option" onclick="selectSize('large')">
+                <div class="size-option" data-size="large" onclick="pickSize('large')">
                     <div class="size-name">Large</div>
                     <div class="size-price" id="largePrice">₱399</div>
-                    <div class="size-dim">12 inches · 8 slices</div>
+                    <div class="size-dim">12 inches · Handstretch</div>
                 </div>
             </div>
+            <div class="opt-label" id="sliceLabel">2 · Choose your cut</div>
+            <div class="slice-options" id="sliceOptions">
+                <button type="button" class="slice-chip" data-slice="8 Slices" onclick="pickSlice('8 Slices')">8 Slices</button>
+                <button type="button" class="slice-chip" data-slice="10 Slices" onclick="pickSlice('10 Slices')">10 Slices</button>
+                <button type="button" class="slice-chip" data-slice="12 Slices" onclick="pickSlice('12 Slices')">12 Slices</button>
+                <button type="button" class="slice-chip" data-slice="16 Slices" onclick="pickSlice('16 Slices')">16 Slices</button>
+                <button type="button" class="slice-chip" data-slice="Square Cut" onclick="pickSlice('Square Cut')">Square Cut</button>
+                <button type="button" class="slice-chip" data-slice="Party Cut" onclick="pickSlice('Party Cut')">Party Cut</button>
+            </div>
+            <button type="button" class="modal-add-btn" id="modalAddBtn" onclick="confirmCustomize()" disabled>Select size &amp; cut</button>
         </div>
     </div>
 
@@ -2898,6 +3016,8 @@
         let currentCategory = 'all';
         let searchTerm = '';
         let pendingItem = null;
+        let pendingSize = null;
+        let pendingSlice = null;
 
         /* ============ INIT ============ */
         document.addEventListener('DOMContentLoaded', () => {
@@ -3134,15 +3254,23 @@
 
             if (item.prices.small) {
                 pendingItem = item;
+                pendingSize = null;
+                pendingSlice = null;
+                const isPizza = item.category === 'pizza';
                 document.getElementById('sizeModalItem').textContent = item.name;
                 document.getElementById('smallPrice').textContent = '₱' + item.prices.small;
                 document.getElementById('largePrice').textContent = '₱' + item.prices.large;
+                document.getElementById('sliceLabel').style.display = isPizza ? '' : 'none';
+                document.getElementById('sliceOptions').style.display = isPizza ? '' : 'none';
+                document.querySelectorAll('.size-option').forEach(o => o.classList.remove('selected'));
+                document.querySelectorAll('.slice-chip').forEach(o => o.classList.remove('selected'));
+                updateModalBtn();
                 document.getElementById('sizeModal').classList.add('open');
                 document.body.style.overflow = 'hidden';
                 return;
             }
 
-            pushToCart(item, Object.keys(item.prices)[0], Object.values(item.prices)[0]);
+            pushToCart(item, Object.keys(item.prices)[0], Object.values(item.prices)[0], null);
 
             if (evt) {
                 const btn = evt.currentTarget;
@@ -3155,30 +3283,63 @@
             }
         }
 
-        function selectSize(size) {
+        function pickSize(size) {
+            pendingSize = size;
+            document.querySelectorAll('.size-option').forEach(o => o.classList.toggle('selected', o.dataset.size === size));
+            updateModalBtn();
+        }
+
+        function pickSlice(slice) {
+            pendingSlice = slice;
+            document.querySelectorAll('.slice-chip').forEach(o => o.classList.toggle('selected', o.dataset.slice === slice));
+            updateModalBtn();
+        }
+
+        function updateModalBtn() {
+            const btn = document.getElementById('modalAddBtn');
             if (!pendingItem) return;
-            pushToCart(pendingItem, size, pendingItem.prices[size]);
+            const needsSlice = pendingItem.category === 'pizza';
+            const ready = pendingSize && (!needsSlice || pendingSlice);
+            btn.disabled = !ready;
+            if (ready) {
+                btn.innerHTML = '<i class="fas fa-shopping-bag"></i> Add to Cart — ₱' + pendingItem.prices[pendingSize];
+            } else if (needsSlice) {
+                btn.textContent = 'Select size & cut';
+            } else {
+                btn.textContent = 'Select size';
+            }
+        }
+
+        function confirmCustomize() {
+            if (!pendingItem || !pendingSize) return;
+            if (pendingItem.category === 'pizza' && !pendingSlice) return;
+            const item = pendingItem;
+            const slices = item.category === 'pizza' ? pendingSlice : null;
+            pushToCart(item, pendingSize, item.prices[pendingSize], slices);
             pendingItem = null;
+            pendingSize = null;
+            pendingSlice = null;
             closeSizeModal();
         }
 
-        function pushToCart(item, size, price) {
-            const existing = cart.find(c => c.id === item.id && c.size === size);
+        function pushToCart(item, size, price, slices) {
+            const existing = cart.find(c => c.id === item.id && c.size === size && c.slices === slices);
             if (existing) {
                 existing.qty += 1;
             } else {
                 cart.push({
-                    key: item.id + '-' + size + '-' + Date.now(),
+                    key: item.id + '-' + size + '-' + (slices || 'none') + '-' + Date.now(),
                     id: item.id,
                     name: item.name,
                     icon: item.icon,
                     size,
+                    slices: slices || null,
                     price,
                     qty: 1
                 });
             }
             renderCart();
-            showToast(`${item.name} (${size}) added to cart`);
+            showToast(`${item.name} (${size}${slices ? ' · ' + slices : ''}) added to cart`);
             bumpCart();
         }
 
@@ -3229,6 +3390,7 @@
                         <h4>${c.name}</h4>
                         <div class="cart-meta">
                             <span class="size-pill">${c.size}</span>
+                            ${c.slices ? `<span class="size-pill slice-pill">${c.slices}</span>` : ''}
                             <span>₱${c.price}</span>
                         </div>
                         <div class="qty-controls">
@@ -3263,6 +3425,8 @@
         function closeSizeModal() {
             document.getElementById('sizeModal').classList.remove('open');
             pendingItem = null;
+            pendingSize = null;
+            pendingSlice = null;
             document.body.style.overflow = '';
         }
 

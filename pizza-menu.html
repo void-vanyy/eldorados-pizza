@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Dorado's Pizza - Interactive Menu</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <meta name="description" content="El Dorado's Pizza - Freshly-made handstretch dough. The most mouthwatering and affordable pizza in town!">
+    <title>El Dorado's Pizza - Freshly-Made Handstretch Dough</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Sacramento&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -16,187 +17,245 @@
         :root {
             --navy: #1B2A4A;
             --dark-navy: #0F1A2E;
+            --deep-navy: #0A1424;
             --primary-red: #E31B23;
             --dark-red: #C41018;
+            --light-red: #FF4D54;
             --white: #FFFFFF;
             --light-gray: #F8F9FA;
             --cream: #FAFAFA;
+            --gray-500: #6B7280;
+            --gray-300: #D1D5DB;
+            --gold: #F5C518;
+            --shadow-sm: 0 2px 8px rgba(15, 26, 46, 0.06);
+            --shadow-md: 0 8px 30px rgba(15, 26, 46, 0.08);
+            --shadow-lg: 0 25px 60px rgba(15, 26, 46, 0.12);
+            --shadow-xl: 0 30px 70px rgba(15, 26, 46, 0.18);
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 120px;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--cream);
             color: var(--dark-navy);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
         }
 
-        /* Preloader */
+        ::selection {
+            background: var(--primary-red);
+            color: var(--white);
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--light-gray); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--navy), var(--primary-red));
+            border-radius: 10px;
+            border: 2px solid var(--light-gray);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-red); }
+
+        img { max-width: 100%; display: block; }
+        button, input, a { font-family: inherit; }
+
+        .container {
+            width: min(1240px, 92%);
+            margin-inline: auto;
+        }
+
+        /* ============ PRELOADER ============ */
         .preloader {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: var(--navy);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: grid;
+            place-items: center;
             z-index: 9999;
-            transition: opacity 0.5s, visibility 0.5s;
+            transition: opacity .7s var(--ease-out), visibility .7s;
         }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
 
-        .preloader.hidden {
-            opacity: 0;
-            visibility: hidden;
+        .loader-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
         }
 
         .pizza-loader {
-            width: 80px;
-            height: 80px;
-            border: 5px solid var(--white);
-            border-top-color: var(--primary-red);
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            border: 4px solid rgba(255,255,255,.15);
+            border-top-color: var(--primary-red);
+            border-right-color: var(--light-red);
+            animation: spin .9s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loader-text {
+            color: var(--white);
+            letter-spacing: 6px;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            animation: loadPulse 1.4s ease-in-out infinite;
         }
 
-        /* Prototype Banner */
+        @keyframes loadPulse { 0%,100% { opacity:.4 } 50% { opacity:1 } }
+
+        /* ============ PROTOTYPE BANNER ============ */
         .prototype-banner {
-            background: var(--primary-red);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            background: linear-gradient(90deg, var(--primary-red), var(--dark-red), var(--primary-red));
+            background-size: 200% 100%;
             color: var(--white);
             text-align: center;
-            padding: 0.5rem 5%;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 2px;
+            padding: .45rem 5%;
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: 2.5px;
             text-transform: uppercase;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1001;
-            transition: transform 0.3s ease;
-            animation: pulseBanner 2s ease-in-out infinite;
+            transition: transform .4s var(--ease-out);
+            animation: bannerShimmer 4s linear infinite;
         }
 
-        @keyframes pulseBanner {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.85; }
+        @keyframes bannerShimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
         }
 
-        /* Navigation */
-        nav {
+        .prototype-banner span { opacity: .95; }
+
+        /* ============ NAVIGATION ============ */
+        .navbar {
             position: fixed;
-            top: 30px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 0.6rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            top: 27px;
+            left: 0;
+            right: 0;
             z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+            padding: .85rem 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            background: rgba(255,255,255,.88);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid rgba(27,42,74,.06);
+            transition: all .4s var(--ease-out);
         }
 
-        nav.scrolled {
-            padding: 0.5rem 5%;
-            background: var(--navy);
+        .navbar.scrolled {
             top: 0;
-        }
-
-        nav.scrolled .nav-links a,
-        nav.scrolled .nav-text,
-        nav.scrolled .logo-text {
-            color: var(--white);
+            padding: .6rem 5%;
+            background: rgba(15,26,46,.92);
+            border-bottom-color: rgba(255,255,255,.08);
+            box-shadow: 0 10px 40px rgba(0,0,0,.25);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: .7rem;
+            text-decoration: none;
+            flex-shrink: 0;
         }
 
         .logo-img {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             object-fit: contain;
             border-radius: 50%;
-            transition: transform 0.3s ease;
+            transition: transform .5s var(--ease-spring);
+            box-shadow: 0 4px 14px rgba(27,42,74,.15);
         }
 
-        .logo:hover .logo-img {
-            transform: scale(1.05);
-        }
+        .logo:hover .logo-img { transform: rotate(-10deg) scale(1.08); }
 
         .logo-text {
-            font-weight: 700;
-            font-size: 0.95rem;
+            font-weight: 800;
+            font-size: .92rem;
             color: var(--navy);
-            letter-spacing: 1px;
-            transition: color 0.3s ease;
+            letter-spacing: 2px;
+            line-height: 1.1;
+            transition: color .3s ease;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        .logo-text small {
+            display: block;
+            font-size: .58rem;
+            font-weight: 500;
+            letter-spacing: 4px;
+            color: var(--primary-red);
+            text-transform: uppercase;
         }
+
+        .navbar.scrolled .logo-text { color: var(--white); }
 
         .nav-links {
             display: flex;
-            gap: 2.5rem;
+            gap: .4rem;
             align-items: center;
+            list-style: none;
         }
 
         .nav-links a {
             text-decoration: none;
             color: var(--dark-navy);
             font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
+            font-size: .88rem;
+            padding: .5rem .95rem;
+            border-radius: 8px;
+            transition: all .3s var(--ease-out);
             position: relative;
         }
 
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary-red);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .nav-links a:hover {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--primary-red);
+            background: rgba(227,27,35,.07);
         }
+
+        .navbar.scrolled .nav-links a { color: rgba(255,255,255,.85); }
+        .navbar.scrolled .nav-links a:hover { color: var(--white); background: rgba(255,255,255,.1); }
+
+        .nav-actions { display: flex; align-items: center; gap: .6rem; }
 
         .cart-btn {
             background: var(--primary-red);
             color: var(--white);
             border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 20px;
+            padding: .62rem 1.15rem;
+            border-radius: 100px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: .5rem;
             font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
+            font-size: .85rem;
+            transition: all .3s var(--ease-out);
+            position: relative;
+            box-shadow: 0 6px 18px rgba(227,27,35,.3);
         }
 
         .cart-btn:hover {
             background: var(--dark-red);
             transform: translateY(-2px);
+            box-shadow: 0 10px 26px rgba(227,27,35,.4);
         }
 
         .cart-count {
@@ -205,1547 +264,2612 @@
             border-radius: 50%;
             width: 20px;
             height: 20px;
-            display: flex;
+            display: grid;
+            place-items: center;
+            font-size: .72rem;
+            font-weight: 800;
+            transition: transform .3s var(--ease-spring);
+        }
+
+        .cart-count.bump { transform: scale(1.35); }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: .5rem;
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 2px;
+            background: var(--navy);
+            border-radius: 2px;
+            transition: all .3s var(--ease-out);
+        }
+
+        .navbar.scrolled .hamburger span { background: var(--white); }
+
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 76px;
+            left: 0;
+            right: 0;
+            background: rgba(15,26,46,.98);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem;
+            z-index: 999;
+            transform: translateY(-120%);
+            transition: transform .45s var(--ease-out);
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+
+        .mobile-menu.open { transform: translateY(0); }
+
+        .mobile-menu a {
+            display: block;
+            color: var(--white);
+            text-decoration: none;
+            padding: .95rem 1rem;
+            font-weight: 500;
+            font-size: 1rem;
+            border-radius: 10px;
+            transition: all .3s ease;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+
+        .mobile-menu a:hover { background: rgba(255,255,255,.08); color: var(--light-red); }
+
+        /* ============ BUTTONS ============ */
+        .btn {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            gap: .6rem;
+            padding: 1rem 2.4rem;
+            border-radius: 100px;
             font-weight: 700;
-            animation: bounce 0.3s ease;
+            font-size: .95rem;
+            text-decoration: none;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all .35s var(--ease-out);
+            letter-spacing: .5px;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+        .btn-primary {
+            background: var(--primary-red);
+            color: var(--white);
+            box-shadow: 0 10px 30px rgba(227,27,35,.35);
         }
 
-        /* Hero Section */
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 40px rgba(227,27,35,.45);
+            background: var(--light-red);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--white);
+            border-color: rgba(255,255,255,.35);
+        }
+
+        .btn-ghost:hover {
+            background: var(--white);
+            color: var(--navy);
+            border-color: var(--white);
+            transform: translateY(-3px);
+        }
+
+        .btn-dark {
+            background: var(--navy);
+            color: var(--white);
+        }
+
+        .btn-dark:hover {
+            background: var(--primary-red);
+            transform: translateY(-3px);
+            box-shadow: 0 14px 34px rgba(227,27,35,.3);
+        }
+
+        /* ============ HERO ============ */
         .hero {
-            height: 100vh;
-            background: linear-gradient(135deg, var(--navy) 0%, var(--dark-navy) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse at 70% 20%, rgba(227,27,35,.18) 0%, transparent 55%),
+                radial-gradient(ellipse at 20% 80%, rgba(227,27,35,.12) 0%, transparent 50%),
+                linear-gradient(150deg, var(--navy) 0%, var(--dark-navy) 55%, var(--deep-navy) 100%);
+            display: grid;
+            place-items: center;
             position: relative;
             overflow: hidden;
-            padding-top: 100px;
+            padding: 8rem 5% 6rem;
+            text-align: center;
         }
 
-        .hero::before {
-            content: '';
+        .hero-grid {
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: var(--primary-red);
-            border-radius: 50%;
-            top: -200px;
-            right: -200px;
-            opacity: 0.15;
-            animation: float 6s ease-in-out infinite;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+            background-size: 70px 70px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+            pointer-events: none;
         }
 
-        .hero::after {
-            content: '';
+        .hero-orb {
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: var(--primary-red);
             border-radius: 50%;
-            bottom: -150px;
-            left: -150px;
-            opacity: 0.2;
-            animation: float 8s ease-in-out infinite reverse;
+            filter: blur(70px);
+            pointer-events: none;
         }
+        .hero-orb.orb-1 { width: 500px; height: 500px; background: var(--primary-red); opacity: .16; top: -160px; right: -140px; animation: orbFloat 9s ease-in-out infinite; }
+        .hero-orb.orb-2 { width: 340px; height: 340px; background: var(--primary-red); opacity: .14; bottom: -140px; left: -100px; animation: orbFloat 11s ease-in-out infinite reverse; }
+        .hero-orb.orb-3 { width: 200px; height: 200px; background: var(--gold); opacity: .07; top: 40%; left: 12%; animation: orbFloat 7s ease-in-out infinite 1s; }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-30px); }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -40px) scale(1.08); }
         }
 
         .hero-content {
-            text-align: center;
-            z-index: 1;
-            color: var(--white);
-            animation: fadeInUp 1s ease;
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            animation: heroIn 1.1s var(--ease-out) both;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes heroIn {
+            from { opacity: 0; transform: translateY(46px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: .7rem;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.14);
+            color: var(--white);
+            padding: .5rem 1.3rem;
+            border-radius: 100px;
+            font-size: .74rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1.8rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-eyebrow .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--primary-red);
+            box-shadow: 0 0 0 0 rgba(227,27,35,.7);
+            animation: dotPing 2s infinite;
+        }
+
+        @keyframes dotPing {
+            0% { box-shadow: 0 0 0 0 rgba(227,27,35,.65); }
+            70% { box-shadow: 0 0 0 12px rgba(227,27,35,0); }
+            100% { box-shadow: 0 0 0 0 rgba(227,27,35,0); }
         }
 
         .hero h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 5rem;
-            margin-bottom: 1rem;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            font-size: clamp(2.6rem, 7vw, 5.2rem);
+            line-height: 1.05;
+            color: var(--white);
+            font-weight: 800;
+            margin-bottom: 1.4rem;
+            text-shadow: 0 6px 30px rgba(0,0,0,.35);
+            letter-spacing: -1px;
         }
 
-        .hero h1 span {
+        .hero h1 .accent {
             color: var(--primary-red);
+            position: relative;
             display: inline-block;
-            animation: wiggle 3s ease-in-out infinite;
+            animation: accentWiggle 4s ease-in-out infinite;
         }
 
-        @keyframes wiggle {
-            0%, 100% { transform: rotate(-3deg); }
-            50% { transform: rotate(3deg); }
+        .hero h1 .accent::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: .06em;
+            width: 100%;
+            height: .12em;
+            background: var(--primary-red);
+            opacity: .3;
+            border-radius: 4px;
+            transform: scaleX(1);
+        }
+
+        @keyframes accentWiggle {
+            0%, 100% { transform: rotate(-1.2deg); }
+            50% { transform: rotate(1.2deg); }
         }
 
         .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: rgba(255,255,255,.78);
+            max-width: 640px;
+            margin: 0 auto 2.6rem;
+            line-height: 1.75;
+            font-weight: 300;
         }
 
-        .hero-btn {
-            background: var(--primary-red);
-            color: var(--white);
-            border: none;
-            padding: 1rem 3rem;
-            font-size: 1.2rem;
-            font-weight: 700;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .hero-btn:hover {
-            background: var(--white);
-            color: var(--navy);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .pizza-float {
-            position: absolute;
-            font-size: 8rem;
-            animation: floatPizza 4s ease-in-out infinite;
-            filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.3));
-        }
-
-        .pizza-float:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
-        .pizza-float:nth-child(2) { top: 60%; right: 10%; animation-delay: 1s; }
-        .pizza-float:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 2s; }
-
-        @keyframes floatPizza {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-20px) rotate(5deg); }
-            75% { transform: translateY(10px) rotate(-5deg); }
-        }
-
-        /* Categories Section */
-        .categories {
-            padding: 5rem 5%;
-            background: var(--white);
-        }
-
-        .section-label {
-            color: var(--primary-red);
-            font-weight: 600;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .section-title {
-            text-align: center;
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
             margin-bottom: 3rem;
         }
 
-        .section-title h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: var(--navy);
-            position: relative;
-            display: inline-block;
+        .hero-badges {
+            display: flex;
+            gap: 2.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
-        .section-title h2::after {
-            content: '';
+        .hero-badge {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            color: rgba(255,255,255,.85);
+            font-size: .84rem;
+            font-weight: 500;
+        }
+
+        .hero-badge i {
+            color: var(--primary-red);
+            background: rgba(227,27,35,.15);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: .9rem;
+        }
+
+        .float-emoji {
             position: absolute;
-            bottom: -10px;
+            font-size: clamp(2.5rem, 5vw, 5rem);
+            opacity: .12;
+            pointer-events: none;
+            animation: emojiDrift 16s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .float-emoji.e1 { top: 18%; left: 6%; animation-delay: 0s; }
+        .float-emoji.e2 { top: 68%; left: 12%; animation-delay: 3s; }
+        .float-emoji.e3 { top: 24%; right: 8%; animation-delay: 6s; }
+        .float-emoji.e4 { bottom: 18%; right: 14%; animation-delay: 9s; }
+        .float-emoji.e5 { top: 48%; right: 4%; animation-delay: 12s; }
+
+        @keyframes emojiDrift {
+            0%, 100% { transform: translate(0,0) rotate(0deg); }
+            33% { transform: translate(22px, -26px) rotate(90deg); }
+            66% { transform: translate(-18px, -14px) rotate(200deg); }
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: var(--primary-red);
-            border-radius: 2px;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .5rem;
+            color: rgba(255,255,255,.55);
+            font-size: .68rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color .3s ease;
         }
 
-        .category-tabs {
+        .scroll-hint:hover { color: var(--white); }
+
+        .scroll-hint .mouse {
+            width: 24px;
+            height: 38px;
+            border: 2px solid rgba(255,255,255,.4);
+            border-radius: 20px;
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
+            padding-top: 6px;
         }
 
-        .tab-btn {
-            padding: 0.8rem 2rem;
-            border: 2px solid var(--navy);
-            background: transparent;
-            color: var(--navy);
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn:hover,
-        .tab-btn.active {
-            background: var(--navy);
-            color: var(--white);
-            transform: translateY(-2px);
-        }
-
-        /* Carousel Section */
-        .carousel-section {
-            padding: 4rem 0;
-            background: var(--white);
-            overflow: hidden;
-        }
-
-        .carousel-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 0 5%;
-        }
-
-        .carousel-track {
-            display: flex;
-            width: max-content;
-            animation: scroll 30s linear infinite;
-        }
-
-        .carousel-track:hover {
-            animation-play-state: paused;
-        }
-
-        @keyframes scroll {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .carousel-item {
-            flex-shrink: 0;
-            width: 200px;
-            height: 280px;
-            margin: 0 1rem;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            transition: all 0.4s ease;
-            position: relative;
-        }
-
-        .carousel-item:hover {
-            transform: scale(1.08);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-        }
-
-        .carousel-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .carousel-item::after {
+        .scroll-hint .mouse::before {
             content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 50%;
-            background: linear-gradient(transparent, rgba(27, 42, 74, 0.8));
-            pointer-events: none;
-        }
-
-        /* Decorative Particles */
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            width: 8px;
+            width: 4px;
             height: 8px;
             background: var(--primary-red);
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: floatParticle 15s infinite linear;
+            border-radius: 4px;
+            animation: wheel 1.6s ease-in-out infinite;
         }
 
-        .particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 12s; }
-        .particle:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 14s; }
-        .particle:nth-child(3) { left: 30%; animation-delay: 4s; animation-duration: 10s; }
-        .particle:nth-child(4) { left: 40%; animation-delay: 1s; animation-duration: 16s; }
-        .particle:nth-child(5) { left: 50%; animation-delay: 3s; animation-duration: 11s; }
-        .particle:nth-child(6) { left: 60%; animation-delay: 5s; animation-duration: 13s; }
-        .particle:nth-child(7) { left: 70%; animation-delay: 0.5s; animation-duration: 15s; }
-        .particle:nth-child(8) { left: 80%; animation-delay: 2.5s; animation-duration: 12s; }
-        .particle:nth-child(9) { left: 90%; animation-delay: 1.5s; animation-duration: 14s; }
-        .particle:nth-child(10) { left: 95%; animation-delay: 4.5s; animation-duration: 11s; }
-
-        @keyframes floatParticle {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.3; }
-            90% { opacity: 0.3; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        @keyframes wheel {
+            0% { opacity: 0; transform: translateY(0); }
+            40% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(12px); }
         }
 
-        /* Wave Dividers */
-        .wave-divider {
-            position: relative;
-            height: 80px;
-            overflow: hidden;
-        }
-
-        .wave-divider svg {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .wave-divider.navy { background: var(--cream); }
-        .wave-divider.white { background: var(--white); }
-        .wave-divider.red { background: var(--light-gray); }
-
-        /* Stats Section */
-        .stats {
-            padding: 4rem 5%;
-            background: var(--white);
+        /* ============ SECTION PATTERNS ============ */
+        .section {
+            padding: clamp(4rem, 8vw, 7rem) 0;
             position: relative;
         }
 
-        .stats::before {
+        .section-head {
+            text-align: center;
+            max-width: 720px;
+            margin: 0 auto 3.5rem;
+        }
+
+        .section-eyebrow {
+            display: inline-block;
+            color: var(--primary-red);
+            font-weight: 700;
+            font-size: .76rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: .9rem;
+            position: relative;
+            padding-left: 46px;
+        }
+
+        .section-eyebrow::before {
             content: '';
             position: absolute;
-            top: 0;
             left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--navy), var(--primary-red), var(--navy));
+            top: 50%;
+            width: 34px;
+            height: 2px;
+            background: var(--primary-red);
+            transform: translateY(-50%);
+        }
+
+        .section-eyebrow.centered {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .section-eyebrow.centered::before {
+            display: none;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4.5vw, 3.2rem);
+            color: var(--navy);
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title .script {
+            font-family: 'Sacramento', cursive;
+            color: var(--primary-red);
+            font-weight: 400;
+            font-size: 1.15em;
+        }
+
+        .section-sub {
+            color: var(--gray-500);
+            font-size: 1rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* Reveal animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(36px);
+            transition: opacity .8s var(--ease-out), transform .8s var(--ease-out);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: .1s; }
+        .reveal-delay-2 { transition-delay: .2s; }
+        .reveal-delay-3 { transition-delay: .3s; }
+        .reveal-delay-4 { transition-delay: .4s; }
+
+        /* ============ STATS ============ */
+        .stats {
+            background: var(--white);
+            padding: clamp(3rem, 6vw, 4.5rem) 0;
+            border-top: 1px solid rgba(27,42,74,.06);
+            border-bottom: 1px solid rgba(27,42,74,.06);
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
+            gap: 1.5rem;
             text-align: center;
         }
 
-        .stat-item {
-            padding: 1.5rem;
+        .stat-item { position: relative; padding: 1rem; }
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background: linear-gradient(transparent, rgba(27,42,74,.15), transparent);
         }
 
-        .stat-number {
+        .stat-value {
             font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            font-weight: 700;
+            font-size: clamp(2.2rem, 4vw, 3.4rem);
+            font-weight: 800;
             color: var(--primary-red);
             line-height: 1;
-            margin-bottom: 0.5rem;
+            margin-bottom: .5rem;
+            letter-spacing: -1px;
+        }
+
+        .stat-value sup {
+            font-size: .5em;
+            vertical-align: super;
+            margin-left: 2px;
         }
 
         .stat-label {
             color: var(--navy);
-            font-weight: 500;
-            font-size: 0.95rem;
+            font-weight: 600;
+            font-size: .9rem;
+            letter-spacing: .3px;
         }
 
         .fake-data-note {
             text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.85rem;
-            color: #999;
+            margin-top: 1.75rem;
+            font-size: .78rem;
+            color: var(--gray-300);
             font-style: italic;
+            font-weight: 400;
         }
 
-        /* Decorative Dots Pattern */
-        .dots-pattern {
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background-image: radial-gradient(var(--primary-red) 2px, transparent 2px);
-            background-size: 20px 20px;
-            opacity: 0.1;
-            pointer-events: none;
-        }
-
-        .dots-pattern.top-left { top: 50px; left: 50px; }
-        .dots-pattern.top-right { top: 50px; right: 50px; }
-        .dots-pattern.bottom-left { bottom: 50px; left: 50px; }
-        .dots-pattern.bottom-right { bottom: 50px; right: 50px; }
-
-        /* CTA Banner */
-        .cta-banner {
-            padding: 4rem 5%;
-            background: linear-gradient(135deg, var(--navy) 0%, var(--dark-navy) 100%);
-            text-align: center;
-            position: relative;
+        /* ============ MARQUEE / CAROUSEL ============ */
+        .gallery {
+            background: var(--white);
+            padding: clamp(3.5rem, 7vw, 5.5rem) 0;
             overflow: hidden;
-        }
-
-        .cta-banner::before {
-            content: '';
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background: var(--primary-red);
-            border-radius: 50%;
-            top: -100px;
-            left: -100px;
-            opacity: 0.2;
-            animation: float 4s ease-in-out infinite;
-        }
-
-        .cta-banner::after {
-            content: '';
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background: var(--primary-red);
-            border-radius: 50%;
-            bottom: -75px;
-            right: -75px;
-            opacity: 0.2;
-            animation: float 5s ease-in-out infinite reverse;
-        }
-
-        .cta-content {
             position: relative;
-            z-index: 1;
         }
 
-        .cta-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--white);
-            margin-bottom: 1rem;
-        }
-
-        .cta-title span {
-            color: var(--primary-red);
-        }
-
-        .cta-text {
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-
-        .cta-btn {
-            display: inline-block;
-            padding: 1rem 3rem;
-            background: var(--primary-red);
-            color: var(--white);
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid var(--primary-red);
-        }
-
-        .cta-btn:hover {
-            background: transparent;
-            color: var(--white);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(227, 27, 35, 0.4);
-        }
-
-        /* Floating Elements */
-        .floating-elements {
+        .gallery::before,
+        .gallery::after {
+            content: '';
             position: absolute;
-            width: 100%;
-            height: 100%;
             top: 0;
-            left: 0;
+            bottom: 0;
+            width: 140px;
+            z-index: 3;
             pointer-events: none;
+        }
+        .gallery::before { left: 0; background: linear-gradient(90deg, #fff, transparent); }
+        .gallery::after { right: 0; background: linear-gradient(270deg, #fff, transparent); }
+
+        .marquee {
+            display: flex;
+            width: max-content;
+            animation: marquee 40s linear infinite;
+            gap: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .marquee:hover { animation-play-state: paused; }
+
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .marquee-item {
+            flex-shrink: 0;
+            width: 240px;
+            height: 320px;
+            border-radius: 22px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            transition: all .5s var(--ease-out);
+            cursor: pointer;
+        }
+
+        .marquee-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15,26,46,.85) 0%, transparent 55%);
+            opacity: .75;
+            transition: opacity .4s ease;
+        }
+
+        .marquee-item:hover { transform: translateY(-14px) scale(1.03); box-shadow: var(--shadow-xl); }
+        .marquee-item:hover::after { opacity: .5; }
+
+        .marquee-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .7s var(--ease-out);
+        }
+
+        .marquee-item:hover img { transform: scale(1.1); }
+
+        .marquee-caption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            padding: 1.5rem 1.25rem;
+            color: var(--white);
+            transform: translateY(8px);
+            transition: transform .4s var(--ease-out);
+        }
+
+        .marquee-item:hover .marquee-caption { transform: translateY(0); }
+
+        .marquee-caption strong {
+            display: block;
+            font-size: .95rem;
+            font-weight: 700;
+            margin-bottom: .15rem;
+        }
+
+        .marquee-caption span {
+            font-size: .74rem;
+            opacity: .8;
+            font-weight: 400;
+        }
+
+        /* ============ HOW IT WORKS ============ */
+        .process { background: var(--light-gray); }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            counter-reset: step;
+        }
+
+        .process-card {
+            background: var(--white);
+            padding: 2.5rem 2rem;
+            border-radius: 22px;
+            position: relative;
+            transition: all .45s var(--ease-out);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            counter-increment: step;
+        }
+
+        .process-card::before {
+            content: '0' counter(step);
+            position: absolute;
+            top: -.4rem;
+            right: 1rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 5.5rem;
+            font-weight: 800;
+            color: rgba(27,42,74,.05);
+            line-height: 1;
+            transition: all .5s var(--ease-out);
+        }
+
+        .process-card:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .process-card:hover::before { color: rgba(227,27,35,.1); }
+
+        .process-icon {
+            width: 62px;
+            height: 62px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--navy), var(--dark-navy));
+            color: var(--white);
+            display: grid;
+            place-items: center;
+            font-size: 1.4rem;
+            margin-bottom: 1.4rem;
+            transition: all .45s var(--ease-spring);
+            box-shadow: 0 10px 24px rgba(27,42,74,.25);
+        }
+
+        .process-card:hover .process-icon {
+            background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+            transform: rotate(-8deg) scale(1.08);
+            box-shadow: 0 12px 28px rgba(227,27,35,.35);
+        }
+
+        .process-card h3 {
+            font-size: 1.15rem;
+            color: var(--navy);
+            margin-bottom: .6rem;
+            font-weight: 700;
+        }
+
+        .process-card p {
+            color: var(--gray-500);
+            font-size: .9rem;
+            line-height: 1.75;
+            font-weight: 300;
+        }
+
+        /* ============ CATEGORIES / TABS ============ */
+        .menu-cats { background: var(--white); padding-bottom: 0; }
+
+        .tab-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: .6rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .tab-btn {
+            padding: .72rem 1.7rem;
+            border: 1.5px solid rgba(27,42,74,.15);
+            background: var(--white);
+            color: var(--navy);
+            border-radius: 100px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: .87rem;
+            transition: all .35s var(--ease-out);
+            position: relative;
             overflow: hidden;
         }
 
-        .float-item {
-            position: absolute;
-            font-size: 2rem;
-            opacity: 0.15;
-            animation: floatAround 20s infinite linear;
+        .tab-btn .count {
+            font-size: .7rem;
+            background: rgba(27,42,74,.08);
+            padding: .1rem .45rem;
+            border-radius: 100px;
+            margin-left: .45rem;
+            font-weight: 700;
         }
 
-        .float-item:nth-child(1) { top: 20%; left: 5%; animation-delay: 0s; }
-        .float-item:nth-child(2) { top: 60%; left: 15%; animation-delay: 3s; }
-        .float-item:nth-child(3) { top: 40%; right: 10%; animation-delay: 6s; }
-        .float-item:nth-child(4) { top: 80%; right: 20%; animation-delay: 9s; }
-        .float-item:nth-child(5) { top: 30%; left: 80%; animation-delay: 12s; }
-
-        @keyframes floatAround {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(20px, -20px) rotate(90deg); }
-            50% { transform: translate(0, -40px) rotate(180deg); }
-            75% { transform: translate(-20px, -20px) rotate(270deg); }
+        .tab-btn:hover {
+            border-color: var(--navy);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
         }
 
-        /* Glow Effect */
-        .glow-effect {
-            position: relative;
+        .tab-btn.active {
+            background: var(--navy);
+            color: var(--white);
+            border-color: var(--navy);
+            box-shadow: 0 8px 22px rgba(27,42,74,.28);
         }
 
-        .glow-effect::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            transform: translate(-50%, -50%);
-            background: var(--primary-red);
-            filter: blur(60px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
+        .tab-btn.active .count { background: rgba(255,255,255,.18); }
 
-        .glow-effect:hover::before {
-            opacity: 0.15;
-        }
-
-        /* Menu Section */
+        /* ============ MENU GRID ============ */
         .menu-section {
-            padding: 5rem 5%;
             background: var(--light-gray);
+            padding-top: clamp(3rem, 6vw, 5rem);
             position: relative;
         }
+
+        .menu-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 240px;
+            max-width: 420px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-300);
+            transition: color .3s ease;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: .95rem 1.2rem .95rem 2.9rem;
+            border: 1.5px solid rgba(27,42,74,.1);
+            background: var(--white);
+            border-radius: 100px;
+            font-size: .92rem;
+            color: var(--navy);
+            transition: all .3s var(--ease-out);
+            outline: none;
+        }
+
+        .search-box input::placeholder { color: var(--gray-300); }
+        .search-box input:focus {
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 4px rgba(227,27,35,.1);
+        }
+
+        .search-box:focus-within i { color: var(--primary-red); }
+
+        .results-info {
+            color: var(--gray-500);
+            font-size: .87rem;
+            font-weight: 500;
+        }
+
+        .results-info strong { color: var(--navy); font-weight: 700; }
 
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.75rem;
         }
 
         .menu-card {
             background: var(--white);
-            border-radius: 20px;
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.4s ease;
-            opacity: 0;
-            transform: translateY(30px);
+            box-shadow: var(--shadow-sm);
+            transition: all .5s var(--ease-out);
             position: relative;
-        }
-
-        .menu-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--navy), var(--primary-red));
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .menu-card:hover::after {
-            transform: scaleX(1);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateY(28px);
+            border: 1px solid rgba(27,42,74,.04);
         }
 
         .menu-card.visible {
             opacity: 1;
             transform: translateY(0);
+            animation: cardIn .7s var(--ease-out) both;
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(28px) scale(.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .menu-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(227,27,35,.15);
         }
 
-        .card-image {
-            height: 200px;
-            background: linear-gradient(135deg, var(--navy) 0%, var(--dark-navy) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 5rem;
+        .card-visual {
+            height: 190px;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(227,27,35,.22), transparent 55%),
+                linear-gradient(140deg, var(--navy) 0%, var(--dark-navy) 100%);
+            display: grid;
+            place-items: center;
             position: relative;
             overflow: hidden;
         }
 
-        .card-image::before {
+        .card-visual::before {
             content: '';
             position: absolute;
-            width: 150%;
-            height: 150%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-            animation: shine 3s infinite;
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.045);
+            top: -60px;
+            right: -50px;
         }
 
-        @keyframes shine {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
+        .card-visual::after {
+            content: '';
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: rgba(227,27,35,.14);
+            bottom: -50px;
+            left: -40px;
         }
+
+        .card-emoji {
+            font-size: 4.5rem;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 12px 22px rgba(0,0,0,.35));
+            transition: transform .55s var(--ease-spring);
+        }
+
+        .menu-card:hover .card-emoji { transform: scale(1.14) rotate(-9deg); }
 
         .card-badges {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: .85rem;
+            left: .85rem;
+            right: .85rem;
             display: flex;
-            gap: 5px;
+            gap: .4rem;
+            flex-wrap: wrap;
+            z-index: 2;
         }
 
         .badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 600;
+            padding: .32rem .7rem;
+            border-radius: 100px;
+            font-size: .62rem;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: .8px;
+            backdrop-filter: blur(6px);
         }
 
         .badge.best-seller {
             background: var(--primary-red);
             color: var(--white);
+            box-shadow: 0 4px 12px rgba(227,27,35,.4);
         }
 
         .badge.no-pork {
-            background: var(--white);
+            background: rgba(255,255,255,.95);
             color: var(--navy);
+            box-shadow: 0 4px 10px rgba(0,0,0,.12);
         }
 
         .badge.new {
-            background: var(--primary-red);
-            color: var(--white);
-            animation: pulse 1s infinite;
+            background: var(--gold);
+            color: var(--dark-navy);
+            box-shadow: 0 4px 12px rgba(245,197,24,.4);
+            animation: badgePop 2s ease-in-out infinite;
         }
 
-        .card-content {
+        @keyframes badgePop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        .card-body {
             padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: .55rem;
         }
 
-        .card-content h3 {
-            font-size: 1.4rem;
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
             color: var(--navy);
-            margin-bottom: 0.5rem;
+            line-height: 1.35;
+            letter-spacing: -.2px;
         }
 
-        .card-content p {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-            line-height: 1.6;
+        .card-desc {
+            color: var(--gray-500);
+            font-size: .85rem;
+            line-height: 1.7;
+            font-weight: 300;
+            flex: 1;
         }
 
-        .price-section {
+        .card-footer {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .prices {
-            display: flex;
+            justify-content: space-between;
             gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed rgba(27,42,74,.12);
+            margin-top: .5rem;
         }
 
-        .price {
+        .price-stack { display: flex; gap: .55rem; flex-wrap: wrap; }
+
+        .price-tag {
             background: var(--light-gray);
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            font-weight: 600;
+            border: 1px solid rgba(27,42,74,.05);
+            padding: .4rem .85rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: .95rem;
+            color: var(--navy);
+            transition: all .3s ease;
         }
 
-        .price small {
-            font-size: 0.7rem;
-            color: #666;
+        .price-tag small {
             display: block;
+            font-size: .6rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 1px;
         }
+
+        .price-tag:hover {
+            background: var(--navy);
+            color: var(--white);
+            border-color: var(--navy);
+        }
+
+        .price-tag:hover small { color: rgba(255,255,255,.65); }
 
         .add-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            border: none;
             background: var(--primary-red);
             color: var(--white);
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
+            font-size: 1.1rem;
             cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
+            display: grid;
+            place-items: center;
+            transition: all .35s var(--ease-spring);
+            box-shadow: 0 6px 18px rgba(227,27,35,.32);
+            flex-shrink: 0;
         }
 
         .add-btn:hover {
             background: var(--dark-red);
-            transform: rotate(90deg);
+            transform: translateY(-3px) rotate(90deg);
+            box-shadow: 0 12px 26px rgba(227,27,35,.42);
         }
 
-        .add-btn.added {
-            background: #28a745;
-            animation: pop 0.3s ease;
+        .add-btn:active { transform: scale(.92); }
+
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-500);
+            grid-column: 1 / -1;
         }
 
-        @keyframes pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
+        .no-results i {
+            font-size: 3.5rem;
+            color: var(--gray-300);
+            margin-bottom: 1rem;
+            display: block;
         }
 
-        /* Specials Section */
-        .specials {
-            padding: 5rem 5%;
-            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+        .no-results h3 {
+            color: var(--navy);
+            font-size: 1.3rem;
+            margin-bottom: .5rem;
+        }
+
+        /* ============ FEATURE / WHY US ============ */
+        .features {
+            background:
+                radial-gradient(ellipse at 85% 15%, rgba(227,27,35,.3), transparent 45%),
+                linear-gradient(150deg, var(--navy) 0%, var(--deep-navy) 100%);
             color: var(--white);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .features .section-title { color: var(--white); }
+        .features .section-sub { color: rgba(255,255,255,.65); }
+        .features .section-eyebrow { color: var(--light-red); }
+        .features .section-eyebrow::before { background: var(--light-red); }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,.055);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 24px;
+            padding: 2.4rem 2rem;
+            text-align: center;
+            transition: all .45s var(--ease-out);
             position: relative;
             overflow: hidden;
         }
 
-        .specials::before {
+        .feature-card::before {
             content: '';
             position: absolute;
-            width: 300px;
-            height: 300px;
-            background: var(--white);
-            border-radius: 50%;
-            top: -100px;
-            right: -100px;
-            opacity: 0.1;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(227,27,35,.25), transparent 60%);
+            opacity: 0;
+            transition: opacity .45s ease;
         }
 
-        .specials .section-title h2 {
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(227,27,35,.4);
+            box-shadow: 0 30px 60px rgba(0,0,0,.35);
+        }
+
+        .feature-card:hover::before { opacity: 1; }
+
+        .feature-icon {
+            width: 74px;
+            height: 74px;
+            border-radius: 22px;
+            background: rgba(227,27,35,.16);
+            border: 1px solid rgba(227,27,35,.35);
+            display: grid;
+            place-items: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.7rem;
+            color: var(--light-red);
+            position: relative;
+            z-index: 1;
+            transition: all .5s var(--ease-spring);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: translateY(-5px) scale(1.06);
+            background: var(--primary-red);
             color: var(--white);
+            border-color: var(--primary-red);
+            box-shadow: 0 14px 30px rgba(227,27,35,.45);
         }
 
-        .specials .section-title h2::after {
-            background: var(--white);
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: .7rem;
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
         }
 
-        .specials-grid {
+        .feature-card p {
+            color: rgba(255,255,255,.68);
+            font-size: .92rem;
+            line-height: 1.75;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============ TESTIMONIALS ============ */
+        .reviews { background: var(--white); }
+
+        .reviews-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            gap: 1.75rem;
         }
 
-        .special-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
+        .review-card {
+            background: var(--white);
+            border: 1px solid rgba(27,42,74,.07);
+            border-radius: 24px;
+            padding: 2.2rem 2rem;
+            position: relative;
+            transition: all .45s var(--ease-out);
+            box-shadow: var(--shadow-sm);
         }
 
-        .special-card:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-10px);
+        .review-card::before {
+            content: '\201C';
+            position: absolute;
+            top: .4rem;
+            right: 1.6rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 6rem;
+            color: rgba(227,27,35,.08);
+            line-height: 1;
         }
 
-        .special-card i {
-            font-size: 3rem;
+        .review-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(227,27,35,.2);
+        }
+
+        .review-stars { color: var(--gold); font-size: .9rem; margin-bottom: 1rem; display: flex; gap: 3px; }
+
+        .review-text {
+            color: var(--gray-500);
+            font-size: .94rem;
+            line-height: 1.85;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .reviewer {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+        }
+
+        .reviewer-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--navy), var(--primary-red));
             color: var(--white);
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            font-size: .95rem;
+        }
+
+        .reviewer-info strong {
+            display: block;
+            color: var(--navy);
+            font-size: .95rem;
+            font-weight: 700;
+        }
+
+        .reviewer-info span {
+            color: var(--gray-500);
+            font-size: .78rem;
+        }
+
+        .verified {
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            background: rgba(40,167,69,.1);
+            color: #28a745;
+            font-size: .66rem;
+            font-weight: 600;
+            padding: .15rem .5rem;
+            border-radius: 100px;
+            margin-top: .2rem;
+        }
+
+        /* ============ CTA ============ */
+        .cta {
+            background:
+                radial-gradient(circle at 15% 85%, rgba(227,27,35,.25), transparent 45%),
+                linear-gradient(135deg, var(--navy) 0%, var(--deep-navy) 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+        }
+
+        .cta-content { position: relative; z-index: 1; max-width: 760px; margin-inline: auto; }
+
+        .cta h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            color: var(--white);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1.2rem;
+            letter-spacing: -.5px;
+        }
+
+        .cta h2 span { color: var(--primary-red); }
+
+        .cta p {
+            color: rgba(255,255,255,.72);
+            font-size: 1.05rem;
+            margin-bottom: 2.4rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .cta-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-phone {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            color: rgba(255,255,255,.55);
+            font-size: .86rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-phone a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-bottom: 2px solid var(--primary-red);
+            padding-bottom: 2px;
+            transition: all .3s ease;
+        }
+
+        .cta-phone a:hover { color: var(--primary-red); }
+
+        /* ============ NEWSLETTER ============ */
+        .newsletter {
+            background: var(--white);
+            border-bottom: 1px solid rgba(27,42,74,.07);
+        }
+
+        .newsletter-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .newsletter h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            color: var(--navy);
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: .7rem;
+        }
+
+        .newsletter h3 span { color: var(--primary-red); }
+
+        .newsletter p {
+            color: var(--gray-500);
+            font-size: .95rem;
+            line-height: 1.75;
+            font-weight: 300;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: .7rem;
+            background: var(--light-gray);
+            padding: .55rem;
+            border-radius: 100px;
+            border: 1.5px solid rgba(27,42,74,.08);
+            transition: all .3s ease;
+        }
+
+        .newsletter-form:focus-within {
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 4px rgba(227,27,35,.1);
+            background: var(--white);
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: .85rem 1.4rem;
+            font-size: .92rem;
+            outline: none;
+            color: var(--navy);
+            min-width: 0;
+        }
+
+        .newsletter-form input::placeholder { color: var(--gray-300); }
+
+        .newsletter-form button {
+            border: none;
+            background: var(--primary-red);
+            color: var(--white);
+            padding: .85rem 1.9rem;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: .88rem;
+            cursor: pointer;
+            transition: all .3s var(--ease-out);
+            white-space: nowrap;
+        }
+
+        .newsletter-form button:hover {
+            background: var(--dark-red);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(227,27,35,.35);
+        }
+
+        .newsletter-note {
+            font-size: .76rem;
+            color: var(--gray-300);
+            margin-top: .7rem;
+            text-align: right;
+            padding-right: .5rem;
+        }
+
+        /* ============ FOOTER ============ */
+        footer {
+            background: var(--deep-navy);
+            color: var(--white);
+            padding-top: clamp(3.5rem, 7vw, 5.5rem);
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 1.5fr repeat(3, 1fr);
+            gap: 3rem;
+            padding-bottom: 3.5rem;
+        }
+
+        .footer-brand .logo { margin-bottom: 1.3rem; }
+        .footer-brand .logo-img { width: 56px; height: 56px; }
+        .footer-brand .logo-text { color: var(--white); }
+
+        .footer-brand p {
+            color: rgba(255,255,255,.6);
+            font-size: .92rem;
+            line-height: 1.85;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            max-width: 340px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: .7rem;
+        }
+
+        .footer-social a {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.1);
+            display: grid;
+            place-items: center;
+            color: rgba(255,255,255,.8);
+            text-decoration: none;
+            transition: all .35s var(--ease-out);
+        }
+
+        .footer-social a:hover {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: var(--white);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 22px rgba(227,27,35,.35);
+        }
+
+        .footer-col h4 {
+            font-size: .8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--primary-red);
+            margin-bottom: 1.4rem;
+        }
+
+        .footer-col ul { list-style: none; }
+
+        .footer-col ul li { margin-bottom: .75rem; }
+
+        .footer-col ul li a {
+            color: rgba(255,255,255,.68);
+            text-decoration: none;
+            font-size: .92rem;
+            font-weight: 300;
+            transition: all .3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .footer-col ul li a::before {
+            content: '';
+            width: 0;
+            height: 1.5px;
+            background: var(--primary-red);
+            transition: width .3s ease;
+        }
+
+        .footer-col ul li a:hover { color: var(--white); transform: translateX(4px); }
+        .footer-col ul li a:hover::before { width: 14px; }
+
+        .footer-contact li {
+            display: flex;
+            gap: .85rem;
+            color: rgba(255,255,255,.68);
+            font-size: .9rem;
+            line-height: 1.7;
+            font-weight: 300;
             margin-bottom: 1rem;
-            animation: bounce 2s infinite;
         }
 
-        .special-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+        .footer-contact li i {
+            color: var(--primary-red);
+            width: 18px;
+            margin-top: 4px;
+            text-align: center;
         }
 
-        .special-card p {
-            opacity: 0.9;
-            font-size: 0.9rem;
+        .footer-contact a { color: inherit; text-decoration: none; transition: color .3s ease; }
+        .footer-contact a:hover { color: var(--white); }
+
+        .footer-hours {
+            display: flex;
+            justify-content: space-between;
+            padding: .55rem 0;
+            border-bottom: 1px dashed rgba(255,255,255,.08);
+            font-size: .87rem;
         }
 
-        /* Cart Sidebar */
-        .cart-sidebar {
+        .footer-hours:last-child { border-bottom: none; }
+        .footer-hours span:first-child { color: rgba(255,255,255,.6); font-weight: 300; }
+        .footer-hours span:last-child { color: var(--white); font-weight: 500; }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,.08);
+            padding: 1.6rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: .84rem;
+            color: rgba(255,255,255,.45);
+        }
+
+        .footer-bottom a { color: rgba(255,255,255,.65); text-decoration: none; transition: color .3s; }
+        .footer-bottom a:hover { color: var(--primary-red); }
+
+        .footer-legal { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+
+        /* ============ CART DRAWER ============ */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10,20,36,.62);
+            backdrop-filter: blur(4px);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all .4s var(--ease-out);
+        }
+
+        .overlay.open { opacity: 1; visibility: visible; }
+
+        .cart-drawer {
             position: fixed;
             top: 0;
-            right: -400px;
-            width: 400px;
-            height: 100%;
+            right: -440px;
+            width: min(440px, 100%);
+            height: 100dvh;
             background: var(--white);
-            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.2);
+            box-shadow: -20px 0 60px rgba(0,0,0,.2);
             z-index: 2000;
-            transition: right 0.4s ease;
+            transition: right .5s var(--ease-out);
             display: flex;
             flex-direction: column;
         }
 
-        .cart-sidebar.open {
-            right: 0;
-        }
+        .cart-drawer.open { right: 0; }
 
-        .cart-header {
-            padding: 1.5rem;
-            background: var(--navy);
+        .drawer-head {
+            padding: 1.6rem 1.8rem;
+            background: linear-gradient(135deg, var(--navy), var(--deep-navy));
             color: var(--white);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .cart-header h3 {
-            font-size: 1.2rem;
+        .drawer-head h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .7rem;
         }
 
-        .close-cart {
-            background: none;
-            border: none;
+        .drawer-head h3 i { color: var(--primary-red); }
+
+        .drawer-close {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.15);
             color: var(--white);
-            font-size: 1.5rem;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            transition: all .3s var(--ease-out);
+            display: grid;
+            place-items: center;
         }
 
-        .close-cart:hover {
-            transform: rotate(90deg);
-        }
+        .drawer-close:hover { background: var(--primary-red); transform: rotate(90deg); }
 
-        .cart-items {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-        }
+        .drawer-body { flex: 1; overflow-y: auto; padding: 1.4rem; }
 
-        .cart-item {
+        .cart-row {
             display: flex;
             gap: 1rem;
             padding: 1rem;
             background: var(--light-gray);
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            animation: slideIn 0.3s ease;
+            border: 1px solid rgba(27,42,74,.05);
+            border-radius: 16px;
+            margin-bottom: .9rem;
+            animation: rowIn .45s var(--ease-out);
+            transition: all .3s ease;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        @keyframes rowIn {
+            from { opacity: 0; transform: translateX(24px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .cart-item-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--navy);
-            border-radius: 10px;
+        .cart-row:hover { background: var(--white); border-color: rgba(227,27,35,.2); box-shadow: var(--shadow-sm); }
+
+        .cart-thumb {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--navy), var(--dark-navy));
+            display: grid;
+            place-items: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .cart-info { flex: 1; min-width: 0; }
+        .cart-info h4 { font-size: .94rem; font-weight: 700; color: var(--navy); margin-bottom: .2rem; line-height: 1.3; }
+
+        .cart-meta {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+            gap: .6rem;
+            font-size: .76rem;
+            color: var(--gray-500);
         }
 
-        .cart-item-details {
-            flex: 1;
+        .size-pill {
+            background: rgba(27,42,74,.08);
+            padding: .1rem .55rem;
+            border-radius: 100px;
+            text-transform: capitalize;
+            font-weight: 600;
         }
 
-        .cart-item-details h4 {
-            font-size: 1rem;
-            margin-bottom: 0.3rem;
+        .qty-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            background: var(--white);
+            border: 1px solid rgba(27,42,74,.1);
+            border-radius: 100px;
+            padding: .15rem;
         }
 
-        .cart-item-details .size {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .cart-item-price {
-            font-weight: 700;
+        .qty-btn {
+            width: 22px;
+            height: 22px;
+            border: none;
+            background: transparent;
             color: var(--navy);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: .8rem;
+            display: grid;
+            place-items: center;
+            transition: all .25s ease;
+            font-weight: 700;
         }
 
-        .remove-item {
+        .qty-btn:hover { background: var(--primary-red); color: var(--white); }
+        .qty-num { font-size: .78rem; font-weight: 700; min-width: 16px; text-align: center; color: var(--navy); }
+
+        .cart-side {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .cart-price { font-weight: 800; color: var(--navy); font-size: .95rem; }
+
+        .cart-remove {
             background: none;
             border: none;
-            color: #999;
+            color: var(--gray-300);
             cursor: pointer;
-            transition: color 0.3s ease;
+            padding: .3rem;
+            border-radius: 8px;
+            transition: all .3s ease;
         }
 
-        .remove-item:hover {
-            color: var(--navy);
+        .cart-remove:hover { color: var(--primary-red); background: rgba(227,27,35,.1); }
+
+        .drawer-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-500);
         }
 
-        .cart-footer {
-            padding: 1.5rem;
-            border-top: 1px solid #eee;
+        .drawer-empty i {
+            font-size: 4rem;
+            color: rgba(27,42,74,.12);
+            margin-bottom: 1.2rem;
+            display: block;
+        }
+
+        .drawer-empty h4 { color: var(--navy); margin-bottom: .5rem; font-size: 1.1rem; }
+        .drawer-empty p { font-size: .88rem; font-weight: 300; }
+
+        .drawer-foot {
+            padding: 1.5rem 1.8rem;
+            border-top: 1px solid rgba(27,42,74,.08);
             background: var(--light-gray);
         }
 
-        .cart-total {
+        .summary-row {
             display: flex;
             justify-content: space-between;
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--navy);
+            font-size: .9rem;
+            color: var(--gray-500);
+            margin-bottom: .55rem;
+            font-weight: 400;
         }
+
+        .summary-row.total {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--navy);
+            padding-top: .7rem;
+            margin-top: .5rem;
+            border-top: 1px dashed rgba(27,42,74,.15);
+            margin-bottom: 1rem;
+        }
+
+        .summary-row .free { color: #28a745; font-weight: 600; }
 
         .checkout-btn {
             width: 100%;
-            padding: 1rem;
+            padding: 1.05rem;
             background: var(--primary-red);
             color: var(--white);
             border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all .35s var(--ease-out);
+            box-shadow: 0 10px 26px rgba(227,27,35,.32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .6rem;
         }
 
-        .checkout-btn:hover {
+        .checkout-btn:hover:not(:disabled) {
             background: var(--dark-red);
             transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(227,27,35,.42);
         }
 
-        .empty-cart {
-            text-align: center;
-            padding: 3rem;
-            color: #999;
-        }
+        .checkout-btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
 
-        .empty-cart i {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Cart Overlay */
-        .cart-overlay {
+        /* ============ MODALS ============ */
+        .modal-backdrop {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .cart-overlay.open {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Size Selector Modal */
-        .size-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
-            background: var(--white);
-            border-radius: 20px;
-            padding: 2rem;
+            inset: 0;
+            background: rgba(10,20,36,.7);
+            backdrop-filter: blur(6px);
             z-index: 3000;
+            display: grid;
+            place-items: center;
+            padding: 1.5rem;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
-            min-width: 300px;
+            transition: all .35s var(--ease-out);
         }
 
-        .size-modal.open {
-            opacity: 1;
-            visibility: visible;
-            transform: translate(-50%, -50%) scale(1);
+        .modal-backdrop.open { opacity: 1; visibility: visible; }
+
+        .modal {
+            background: var(--white);
+            border-radius: 28px;
+            padding: 2.4rem;
+            width: min(460px, 100%);
+            transform: translateY(24px) scale(.96);
+            transition: all .45s var(--ease-spring);
+            position: relative;
+            box-shadow: 0 40px 90px rgba(0,0,0,.35);
         }
 
-        .size-modal h3 {
+        .modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+
+        .modal-close {
+            position: absolute;
+            top: 1.1rem;
+            right: 1.1rem;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--light-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--gray-500);
+            transition: all .3s ease;
+            display: grid;
+            place-items: center;
+        }
+
+        .modal-close:hover { background: var(--primary-red); color: var(--white); transform: rotate(90deg); }
+
+        .modal-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(227,27,35,.12), rgba(227,27,35,.04));
+            color: var(--primary-red);
+            display: grid;
+            place-items: center;
+            font-size: 1.6rem;
+            margin: 0 auto 1.3rem;
+        }
+
+        .modal h3 {
             text-align: center;
-            margin-bottom: 1.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
             color: var(--navy);
+            margin-bottom: .5rem;
+            font-weight: 800;
         }
 
-        .size-options {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
+        .modal > p {
+            text-align: center;
+            color: var(--gray-500);
+            font-size: .9rem;
+            margin-bottom: 1.7rem;
+            line-height: 1.7;
+            font-weight: 300;
         }
+
+        .size-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
         .size-option {
-            flex: 1;
-            padding: 1.5rem;
-            border: 2px solid #eee;
-            border-radius: 15px;
+            padding: 1.5rem 1rem;
+            border: 2px solid rgba(27,42,74,.1);
+            border-radius: 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all .35s var(--ease-out);
+            background: var(--white);
         }
 
         .size-option:hover {
             border-color: var(--navy);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
         }
 
-        .size-option.selected {
-            border-color: var(--navy);
-            background: var(--navy);
-            color: var(--white);
-        }
-
-        .size-option h4 {
-            margin-bottom: 0.5rem;
-        }
-
-        .size-option p {
-            font-size: 1.2rem;
+        .size-option .size-name {
+            font-size: .8rem;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gray-500);
+            margin-bottom: .6rem;
         }
 
-        /* Footer */
-        footer {
-            background: var(--dark-navy);
+        .size-option .size-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .size-option .size-dim {
+            font-size: .74rem;
+            color: var(--gray-300);
+            margin-top: .4rem;
+        }
+
+        .size-option:hover .size-price { color: var(--primary-red); }
+
+        /* ============ TOAST ============ */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 34px;
+            transform: translate(-50%, 30px);
+            background: var(--deep-navy);
             color: var(--white);
-            padding: 4rem 5% 2rem;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-section h4 {
-            color: var(--primary-red);
-            margin-bottom: 1.5rem;
-            font-size: 1.2rem;
-        }
-
-        .footer-section p {
-            opacity: 0.8;
-            line-height: 1.8;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 0.8rem;
-        }
-
-        .footer-section ul li a {
-            color: var(--white);
-            text-decoration: none;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
-
-        .footer-section ul li a:hover {
-            opacity: 1;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .social-links a {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-red);
-            border-radius: 50%;
+            padding: .95rem 1.6rem;
+            border-radius: 100px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: var(--white);
-            transition: all 0.3s ease;
+            gap: .7rem;
+            font-size: .9rem;
+            font-weight: 500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all .4s var(--ease-spring);
+            z-index: 4000;
+            box-shadow: 0 20px 50px rgba(0,0,0,.35);
+            border: 1px solid rgba(255,255,255,.1);
+            max-width: 90%;
         }
 
-        .social-links a:hover {
-            background: var(--white);
-            color: var(--primary-red);
-            transform: translateY(-3px);
-        }
+        .toast.show { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
 
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            margin-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0.7;
-        }
+        .toast i { color: #34D399; }
+        .toast.warn i { color: var(--gold); }
 
-        /* Scroll to Top Button */
+        /* ============ SCROLL TOP ============ */
         .scroll-top {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             background: var(--navy);
             color: var(--white);
             border: none;
-            border-radius: 50%;
+            border-radius: 14px;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 100;
+            transform: translateY(14px);
+            transition: all .4s var(--ease-spring);
+            z-index: 900;
+            box-shadow: 0 12px 28px rgba(27,42,74,.35);
+            display: grid;
+            place-items: center;
         }
 
-        .scroll-top.visible {
-            opacity: 1;
-            visibility: visible;
-        }
+        .scroll-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
 
         .scroll-top:hover {
             background: var(--primary-red);
             transform: translateY(-5px);
+            box-shadow: 0 18px 34px rgba(227,27,35,.4);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 3rem;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .cart-sidebar {
-                width: 100%;
-                right: -100%;
-            }
-
-            .menu-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .stat-number {
-                font-size: 2.5rem;
-            }
-
-            .cta-title {
-                font-size: 1.8rem;
-            }
-
-            .float-item {
-                display: none;
-            }
-        }
-
-        /* Toast Notification */
-        .toast {
+        .scroll-progress {
             position: fixed;
-            bottom: 100px;
-            right: 30px;
-            background: var(--navy);
-            color: var(--white);
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            z-index: 1000;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-red), var(--gold));
+            z-index: 1002;
+            transition: width .1s linear;
+            box-shadow: 0 0 10px rgba(227,27,35,.6);
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 1024px) {
+            .footer-main { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+            .newsletter-box { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
+            .newsletter-note { text-align: center; }
         }
 
-        .toast i {
-            color: #28a745;
+        @media (max-width: 860px) {
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .mobile-menu { display: block; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .stat-item::after { display: none; }
+            .menu-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+        }
+
+        @media (max-width: 640px) {
+            .prototype-banner { font-size: .62rem; letter-spacing: 1.5px; }
+            .logo-text { font-size: .8rem; letter-spacing: 1.2px; }
+            .cart-btn span.label { display: none; }
+            .hero { padding-top: 7rem; }
+            .hero-badges { gap: 1.2rem; }
+            .hero-badge { font-size: .78rem; }
+            .menu-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .footer-main { grid-template-columns: 1fr; gap: 2rem; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            .newsletter-form { flex-direction: column; border-radius: 22px; }
+            .newsletter-form button { border-radius: 100px; }
+            .size-options { grid-template-columns: 1fr; }
+            .modal { padding: 1.8rem; }
+            .tab-list { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding-bottom: .5rem; scrollbar-width: none; }
+            .tab-list::-webkit-scrollbar { display: none; }
+            .tab-btn { white-space: nowrap; }
+            .marquee-item { width: 190px; height: 260px; }
         }
     </style>
 </head>
 <body>
+    <!-- Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
     <!-- Preloader -->
     <div class="preloader" id="preloader">
-        <div class="pizza-loader"></div>
+        <div class="loader-wrap">
+            <div class="pizza-loader"></div>
+            <div class="loader-text">El Dorado's</div>
+        </div>
     </div>
 
     <!-- Prototype Banner -->
-    <div class="prototype-banner">
-        ⚠️ Prototype Sample - Not Final Product ⚠️
+    <div class="prototype-banner" id="protoBanner">
+        <span>⚠️ Prototype Sample — Not Final Product ⚠️</span>
     </div>
 
     <!-- Navigation -->
-    <nav id="navbar">
-        <div class="logo">
+    <nav class="navbar" id="navbar">
+        <a class="logo" href="#home">
             <img class="logo-img" src="img/img.png" alt="El Dorado's Pizza Logo">
-            <span class="logo-text">EL DORADO'S</span>
-        </div>
-        <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#menu">Menu</a>
-            <a href="#specials">Specials</a>
-            <a href="#contact">Contact</a>
-        </div>
-        <button class="cart-btn" onclick="openCart()">
-            <i class="fas fa-shopping-cart"></i> Cart
-            <span class="cart-count" id="cartCount">0</span>
-        </button>
-    </nav>
+            <span class="logo-text">EL DORADO'S<small>Pizza Kitchen</small></span>
+        </a>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="particles">
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-        </div>
-        <div class="floating-elements">
-            <span class="float-item">🍕</span>
-            <span class="float-item">🧀</span>
-            <span class="float-item">🌶️</span>
-            <span class="float-item">🍅</span>
-            <span class="float-item">🌿</span>
-        </div>
-        <div class="pizza-float">🍕</div>
-        <div class="pizza-float">🧀</div>
-        <div class="pizza-float">🍕</div>
-        <div class="hero-content">
-            <h1>Freshly-made Handstretch <span>Dough</span></h1>
-            <p>The most mouthwatering and affordable pizza in town!</p>
-            <button class="hero-btn" onclick="document.getElementById('menu').scrollIntoView({behavior: 'smooth'})">
-                Order Now <i class="fas fa-arrow-right"></i>
+        <ul class="nav-links">
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="#story">Our Story</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#features">Why Us</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <button class="cart-btn" onclick="openCart()" aria-label="Open cart">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="label">Cart</span>
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
             </button>
         </div>
-        <div class="dots-pattern top-right"></div>
-        <div class="dots-pattern bottom-left"></div>
-    </section>
+    </nav>
 
-    <!-- Wave Divider -->
-    <div class="wave-divider navy">
-        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-            <path fill="#1B2A4A" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z"></path>
-        </svg>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#home">Home</a>
+        <a href="#story">Our Story</a>
+        <a href="#menu">Menu</a>
+        <a href="#features">Why Us</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#contact">Contact</a>
     </div>
 
-    <!-- Stats Section -->
+    <!-- ============ HERO ============ -->
+    <header class="hero" id="home">
+        <div class="hero-grid"></div>
+        <div class="hero-orb orb-1"></div>
+        <div class="hero-orb orb-2"></div>
+        <div class="hero-orb orb-3"></div>
+
+        <span class="float-emoji e1">🍕</span>
+        <span class="float-emoji e2">🧀</span>
+        <span class="float-emoji e3">🌶️</span>
+        <span class="float-emoji e4">🍅</span>
+        <span class="float-emoji e5">🌿</span>
+
+        <div class="hero-content">
+            <div class="hero-eyebrow">
+                <span class="dot"></span>
+                Authentic Filipino Pizzeria
+            </div>
+
+            <h1>Freshly-made Handstretch <span class="accent">Dough</span></h1>
+
+            <p>The most mouthwatering and affordable pizza in town! Hand-stretched daily, fired hot, and served with love since 1995.</p>
+
+            <div class="hero-cta">
+                <a href="#menu" class="btn btn-primary">
+                    Order Now <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="#story" class="btn btn-ghost">Our Story</a>
+            </div>
+
+            <div class="hero-badges">
+                <div class="hero-badge"><i class="fas fa-fire-flame-curved"></i> Stone-baked Fresh</div>
+                <div class="hero-badge"><i class="fas fa-truck-fast"></i> 30-Min Delivery</div>
+                <div class="hero-badge"><i class="fas fa-leaf"></i> Fresh Daily</div>
+            </div>
+        </div>
+
+        <div class="scroll-hint" onclick="document.getElementById('story').scrollIntoView({behavior:'smooth'})">
+            <div class="mouse"></div>
+            Scroll
+        </div>
+    </header>
+
+    <!-- ============ STATS ============ -->
     <section class="stats">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-number" data-target="29">0</div>
-                <div class="stat-label">Years of Service</div>
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item reveal">
+                    <div class="stat-value"><span class="counter" data-target="29">0</span><sup>+</sup></div>
+                    <div class="stat-label">Years of Service</div>
+                </div>
+                <div class="stat-item reveal reveal-delay-1">
+                    <div class="stat-value"><span class="counter" data-target="50000">0</span><sup>+</sup></div>
+                    <div class="stat-label">Pizzas Served</div>
+                </div>
+                <div class="stat-item reveal reveal-delay-2">
+                    <div class="stat-value"><span class="counter" data-target="15">0</span><sup>+</sup></div>
+                    <div class="stat-label">Branches</div>
+                </div>
+                <div class="stat-item reveal reveal-delay-3">
+                    <div class="stat-value"><span class="counter" data-target="98">0</span><sup>%</sup></div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
             </div>
-            <div class="stat-item">
-                <div class="stat-number" data-target="50000">0</div>
-                <div class="stat-label">Pizzas Served</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" data-target="15">0</div>
-                <div class="stat-label">Branches</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" data-target="98">0</div>
-                <div class="stat-label">% Happy Customers</div>
-            </div>
-        </div>
-        <p class="fake-data-note">*Sample data for demo purposes</p>
-    </section>
-
-    <!-- Wave Divider -->
-    <div class="wave-divider white">
-        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-            <path fill="#FAFAFA" d="M0,32L48,37.3C96,43,192,53,288,64C384,75,480,85,576,80C672,75,768,53,864,42.7C960,32,1056,32,1152,37.3C1248,43,1344,53,1392,58.7L1440,64L1440,120L0,120Z"></path>
-        </svg>
-    </div>
-
-    <!-- Categories Section -->
-    <section class="categories" id="categories">
-        <div class="section-title">
-            <h2>Our Menu</h2>
-        </div>
-        <div class="category-tabs">
-            <button class="tab-btn active" data-category="all">All Items</button>
-            <button class="tab-btn" data-category="pizza">Pizza</button>
-            <button class="tab-btn" data-category="pasta">Pasta</button>
-            <button class="tab-btn" data-category="sides">Sides & Crust</button>
-            <button class="tab-btn" data-category="desserts">Desserts</button>
-            <button class="tab-btn" data-category="drinks">Drinks</button>
+            <p class="fake-data-note">*Sample data for demo purposes</p>
         </div>
     </section>
 
-    <!-- Carousel Section -->
-    <section class="carousel-section">
-        <div class="carousel-header">
-            <p class="section-label">Gallery</p>
-            <h2 class="section-title">Our Delicious Pizzas</h2>
-        </div>
-        <div class="carousel-track">
-            <div class="carousel-item"><img src="img/img_1.png" alt="Pizza 1"></div>
-            <div class="carousel-item"><img src="img/img_2.png" alt="Pizza 2"></div>
-            <div class="carousel-item"><img src="img/img_3.png" alt="Pizza 3"></div>
-            <div class="carousel-item"><img src="img/img_4.png" alt="Pizza 4"></div>
-            <div class="carousel-item"><img src="img/img_5.png" alt="Pizza 5"></div>
-            <div class="carousel-item"><img src="img/img_6.png" alt="Pizza 6"></div>
-            <div class="carousel-item"><img src="img/img_7.png" alt="Pizza 7"></div>
-            <div class="carousel-item"><img src="img/img_8.png" alt="Pizza 8"></div>
-            <div class="carousel-item"><img src="img/img_9.png" alt="Pizza 9"></div>
-            <div class="carousel-item"><img src="img/img_10.png" alt="Pizza 10"></div>
-            <div class="carousel-item"><img src="img/img_11.png" alt="Pizza 11"></div>
-            <!-- Duplicated for seamless loop -->
-            <div class="carousel-item"><img src="img/img_1.png" alt="Pizza 1"></div>
-            <div class="carousel-item"><img src="img/img_2.png" alt="Pizza 2"></div>
-            <div class="carousel-item"><img src="img/img_3.png" alt="Pizza 3"></div>
-            <div class="carousel-item"><img src="img/img_4.png" alt="Pizza 4"></div>
-            <div class="carousel-item"><img src="img/img_5.png" alt="Pizza 5"></div>
-            <div class="carousel-item"><img src="img/img_6.png" alt="Pizza 6"></div>
-            <div class="carousel-item"><img src="img/img_7.png" alt="Pizza 7"></div>
-            <div class="carousel-item"><img src="img/img_8.png" alt="Pizza 8"></div>
-            <div class="carousel-item"><img src="img/img_9.png" alt="Pizza 9"></div>
-            <div class="carousel-item"><img src="img/img_10.png" alt="Pizza 10"></div>
-            <div class="carousel-item"><img src="img/img_11.png" alt="Pizza 11"></div>
-        </div>
-    </section>
-
-    <!-- Menu Section -->
-    <section class="menu-section" id="menu">
-        <div class="menu-grid" id="menuGrid">
-            <!-- Items will be loaded dynamically -->
-        </div>
-    </section>
-
-    <!-- Specials Section -->
-    <section class="specials" id="specials">
-        <div class="floating-elements">
-            <span class="float-item">⭐</span>
-            <span class="float-item">🏆</span>
-            <span class="float-item">💯</span>
-        </div>
-        <div class="section-title">
-            <h2>Why Choose Us?</h2>
-        </div>
-        <div class="specials-grid">
-            <div class="special-card">
-                <i class="fas fa-fire"></i>
-                <h3>Fresh Ingredients</h3>
-                <p>We use only the freshest ingredients delivered daily</p>
-            </div>
-            <div class="special-card">
-                <i class="fas fa-clock"></i>
-                <h3>Fast Delivery</h3>
-                <p>Hot and fresh pizza delivered in 30 minutes or less</p>
-            </div>
-            <div class="special-card">
-                <i class="fas fa-heart"></i>
-                <h3>Made with Love</h3>
-                <p>Every pizza is handcrafted with passion and care</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Wave Divider -->
-    <div class="wave-divider red">
-        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-            <path fill="#E31B23" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z"></path>
-        </svg>
-    </div>
-
-    <!-- CTA Banner -->
-    <section class="cta-banner">
-        <div class="cta-content">
-            <h2 class="cta-title">Ready to <span>Order</span>?</h2>
-            <p class="cta-text">Call us now and get your favorite pizza delivered hot and fresh!</p>
-            <a href="tel:+639123456789" class="cta-btn">
-                <i class="fas fa-phone"></i> Order Now: +63 912 345 6789
-            </a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>About Us</h4>
-                <p>El Dorado's Pizza has been serving delicious, handcrafted pizzas since 1995. We take pride in our quality ingredients and authentic recipes.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#menu">Menu</a></li>
-                    <li><a href="#specials">Specials</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contact Info</h4>
-                <p><i class="fas fa-phone"></i> +63 912 345 6789</p>
-                <p><i class="fas fa-envelope"></i> info@coloradopizza.com</p>
-                <p><i class="fas fa-map-marker-alt"></i> 123 Pizza Street, Manila</p>
-            </div>
-            <div class="footer-section">
-                <h4>Follow Us</h4>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
+    <!-- ============ STORY ============ -->
+    <section class="section" id="story">
+        <div class="container">
+            <div class="newsletter-box" style="grid-template-columns: 1fr 1.2fr; align-items: center;">
+                <div class="reveal">
+                    <span class="section-eyebrow">Our Story</span>
+                    <h2 class="section-title">Two decades of <span class="script">handcrafted</span> flavor</h2>
+                    <p class="section-sub" style="margin-bottom:1.6rem;">
+                        What began as a small family kitchen in 1995 has grown into a community favorite — but our recipe hasn't changed. Every dough is still hand-stretched to order, every sauce simmered from scratch, and every pizza fired hot and fresh for you.
+                    </p>
+                    <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+                        <a href="#menu" class="btn btn-dark">Explore the Menu</a>
+                        <div style="display:flex; align-items:center; gap:.7rem;">
+                            <div style="display:flex; gap:-6px;">
+                                <span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1B2A4A,#E31B23);border:3px solid #fff;display:grid;place-items:center;color:#fff;font-size:.8rem;font-weight:700;">JD</span>
+                                <span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#E31B23,#1B2A4A);border:3px solid #fff;display:grid;place-items:center;color:#fff;font-size:.8rem;font-weight:700;margin-left:-14px;">MR</span>
+                                <span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#F5C518,#E31B23);border:3px solid #fff;display:grid;place-items:center;color:#fff;font-size:.8rem;font-weight:700;margin-left:-14px;">AL</span>
+                            </div>
+                            <span style="font-size:.85rem;color:var(--gray-500);">Loved by 50k+ families</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal reveal-delay-2" style="position:relative;">
+                    <div style="position:relative; border-radius:28px; overflow:hidden; box-shadow: var(--shadow-xl);">
+                        <img src="img/img_5.png" alt="Our pizza" style="width:100%; height:420px; object-fit:cover;">
+                        <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,26,46,.75), transparent 60%);"></div>
+                    </div>
+                    <div style="position:absolute; bottom:-22px; left:-18px; background:#fff; padding:1.1rem 1.4rem; border-radius:20px; box-shadow: var(--shadow-lg); display:flex; align-items:center; gap:.9rem;">
+                        <div style="width:52px;height:52px;border-radius:16px;background:var(--primary-red);color:#fff;display:grid;place-items:center;font-size:1.3rem;">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:800;color:var(--navy);font-size:1.05rem;">Est. 1995</div>
+                            <div style="font-size:.78rem;color:var(--gray-500);">Family-owned since day one</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 El Dorado's Pizza. All rights reserved.</p>
+    </section>
+
+    <!-- ============ GALLERY MARQUEE ============ -->
+    <section class="gallery">
+        <div class="section-head container">
+            <span class="section-eyebrow centered">Gallery</span>
+            <h2 class="section-title">Straight from our <span class="script">oven</span></h2>
+            <p class="section-sub">Real photos of what lands on your table.</p>
+        </div>
+
+        <div class="marquee">
+            <div class="marquee-item"><img src="img/img_1.png" alt="Pizza"><div class="marquee-caption"><strong>Classic Cheese</strong><span>Handstretch dough</span></div></div>
+            <div class="marquee-item"><img src="img/img_2.png" alt="Pizza"><div class="marquee-caption"><strong>Pepperoni Lovers</strong><span>Best seller</span></div></div>
+            <div class="marquee-item"><img src="img/img_3.png" alt="Pizza"><div class="marquee-caption"><strong>Garden Veggie</strong><span>No pork</span></div></div>
+            <div class="marquee-item"><img src="img/img_4.png" alt="Pizza"><div class="marquee-caption"><strong>Meat Feast</strong><span>Loaded toppings</span></div></div>
+            <div class="marquee-item"><img src="img/img_5.png" alt="Pizza"><div class="marquee-caption"><strong>Supreme</strong><span>Chef's pick</span></div></div>
+            <div class="marquee-item"><img src="img/img_6.png" alt="Pizza"><div class="marquee-caption"><strong>Seafood Special</strong><span>Fresh catch</span></div></div>
+            <div class="marquee-item"><img src="img/img_7.png" alt="Pizza"><div class="marquee-caption"><strong>Chicken Supreme</strong><span>White sauce</span></div></div>
+            <div class="marquee-item"><img src="img/img_8.png" alt="Pizza"><div class="marquee-caption"><strong>Sisig Pizza</strong><span>Pinoy favorite</span></div></div>
+            <div class="marquee-item"><img src="img/img_9.png" alt="Pizza"><div class="marquee-caption"><strong>Hot &amp; Spicy</strong><span>Chili kick</span></div></div>
+            <div class="marquee-item"><img src="img/img_10.png" alt="Pizza"><div class="marquee-caption"><strong>Beef Deluxe</strong><span>New arrival</span></div></div>
+            <div class="marquee-item"><img src="img/img_11.png" alt="Pizza"><div class="marquee-caption"><strong>Creamy Spinach</strong><span>Vegetarian</span></div></div>
+            <!-- Duplicated for seamless loop -->
+            <div class="marquee-item"><img src="img/img_1.png" alt="Pizza"><div class="marquee-caption"><strong>Classic Cheese</strong><span>Handstretch dough</span></div></div>
+            <div class="marquee-item"><img src="img/img_2.png" alt="Pizza"><div class="marquee-caption"><strong>Pepperoni Lovers</strong><span>Best seller</span></div></div>
+            <div class="marquee-item"><img src="img/img_3.png" alt="Pizza"><div class="marquee-caption"><strong>Garden Veggie</strong><span>No pork</span></div></div>
+            <div class="marquee-item"><img src="img/img_4.png" alt="Pizza"><div class="marquee-caption"><strong>Meat Feast</strong><span>Loaded toppings</span></div></div>
+            <div class="marquee-item"><img src="img/img_5.png" alt="Pizza"><div class="marquee-caption"><strong>Supreme</strong><span>Chef's pick</span></div></div>
+            <div class="marquee-item"><img src="img/img_6.png" alt="Pizza"><div class="marquee-caption"><strong>Seafood Special</strong><span>Fresh catch</span></div></div>
+            <div class="marquee-item"><img src="img/img_7.png" alt="Pizza"><div class="marquee-caption"><strong>Chicken Supreme</strong><span>White sauce</span></div></div>
+            <div class="marquee-item"><img src="img/img_8.png" alt="Pizza"><div class="marquee-caption"><strong>Sisig Pizza</strong><span>Pinoy favorite</span></div></div>
+            <div class="marquee-item"><img src="img/img_9.png" alt="Pizza"><div class="marquee-caption"><strong>Hot &amp; Spicy</strong><span>Chili kick</span></div></div>
+            <div class="marquee-item"><img src="img/img_10.png" alt="Pizza"><div class="marquee-caption"><strong>Beef Deluxe</strong><span>New arrival</span></div></div>
+            <div class="marquee-item"><img src="img/img_11.png" alt="Pizza"><div class="marquee-caption"><strong>Creamy Spinach</strong><span>Vegetarian</span></div></div>
+        </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section class="section process">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-eyebrow centered">How It Works</span>
+                <h2 class="section-title">From our oven to <span class="script">your door</span></h2>
+                <p class="section-sub">Four simple steps. No gimmicks, just great pizza.</p>
+            </div>
+            <div class="process-grid">
+                <div class="process-card reveal">
+                    <div class="process-icon"><i class="fas fa-list-check"></i></div>
+                    <h3>Browse the Menu</h3>
+                    <p>Pick from over 40 items across pizzas, pastas, sides, desserts and drinks.</p>
+                </div>
+                <div class="process-card reveal reveal-delay-1">
+                    <div class="process-icon"><i class="fas fa-pizza-slice"></i></div>
+                    <h3>Customize Your Order</h3>
+                    <p>Choose your size — Small 7" or Large 12" — and add extra toppings if you like.</p>
+                </div>
+                <div class="process-card reveal reveal-delay-2">
+                    <div class="process-icon"><i class="fas fa-fire-burner"></i></div>
+                    <h3>We Fire It Fresh</h3>
+                    <p>Your pizza is hand-stretched and stone-baked only after you order. Never pre-made.</p>
+                </div>
+                <div class="process-card reveal reveal-delay-3">
+                    <div class="process-icon"><i class="fas fa-motorcycle"></i></div>
+                    <h3>Delivered in 30 Mins</h3>
+                    <p>Hot, fresh and boxed. Free delivery on large orders across all branches.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ CATEGORIES + MENU ============ -->
+    <section class="section menu-cats" id="menu">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-eyebrow centered">Full Menu</span>
+                <h2 class="section-title">Our freshly-made <span class="script">selection</span></h2>
+                <p class="section-sub">Every pizza made upon order. Small = 7 inches, Large = 12 inches. All pizzas available in thin crust.</p>
+            </div>
+
+            <div class="tab-list" id="tabList">
+                <button class="tab-btn active" data-category="all">All Items <span class="count">41</span></button>
+                <button class="tab-btn" data-category="pizza">Pizza <span class="count">16</span></button>
+                <button class="tab-btn" data-category="pasta">Pasta <span class="count">4</span></button>
+                <button class="tab-btn" data-category="sides">Sides &amp; Crust <span class="count">10</span></button>
+                <button class="tab-btn" data-category="desserts">Desserts <span class="count">5</span></button>
+                <button class="tab-btn" data-category="drinks">Drinks <span class="count">6</span></button>
+            </div>
+        </div>
+    </section>
+
+    <section class="menu-section">
+        <div class="container">
+            <div class="menu-toolbar">
+                <div class="search-box">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="Search for pizza, pasta, wings..." autocomplete="off">
+                </div>
+                <div class="results-info" id="resultsInfo"><strong>41</strong> items available</div>
+            </div>
+
+            <div class="menu-grid" id="menuGrid"></div>
+        </div>
+    </section>
+
+    <!-- ============ FEATURES ============ -->
+    <section class="section features" id="features">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-eyebrow centered">Why Choose Us</span>
+                <h2 class="section-title">The El Dorado <span class="script">difference</span></h2>
+                <p class="section-sub">Four reasons families keep coming back for 29 years running.</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fas fa-fire-flame-curved"></i></div>
+                    <h3>Stone-Baked Fresh</h3>
+                    <p>Fired at high heat only after you order. Every crust comes out crisp outside, pillowy inside.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-1">
+                    <div class="feature-icon"><i class="fas fa-wheat-awn"></i></div>
+                    <h3>Handstretch Dough</h3>
+                    <p>Rested 24 hours, then stretched by hand. No machines, no shortcuts — just tradition.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-2">
+                    <div class="feature-icon"><i class="fas fa-truck-fast"></i></div>
+                    <h3>30-Minute Delivery</h3>
+                    <p>Hot pizza at your door in half an hour, or your next order is on us. That's a promise.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-3">
+                    <div class="feature-icon"><i class="fas fa-tags"></i></div>
+                    <h3>Fair, Honest Pricing</h3>
+                    <p>Premium ingredients shouldn't cost a fortune. Big flavor, small prices, no hidden charges.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ TESTIMONIALS ============ -->
+    <section class="section reviews" id="reviews">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-eyebrow centered">Testimonials</span>
+                <h2 class="section-title">What our customers <span class="script">say</span></h2>
+                <p class="section-sub">Sample reviews shown for prototype demonstration.</p>
+            </div>
+            <div class="reviews-grid">
+                <div class="review-card reveal">
+                    <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="review-text">"The sisig pizza is unreal. We order every Friday night and it's always hot, always fresh. The crust is the best I've had in Manila."</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">MR</div>
+                        <div class="reviewer-info">
+                            <strong>Maria Reyes</strong>
+                            <span>Quezon City</span>
+                            <span class="verified"><i class="fas fa-circle-check"></i> Verified order</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card reveal reveal-delay-1">
+                    <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="review-text">"Affordable and legit delicious. My kids ask for El Dorado's by name now. The 30-minute delivery has never missed for us."</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">JC</div>
+                        <div class="reviewer-info">
+                            <strong>Jason Cruz</strong>
+                            <span>Marikina City</span>
+                            <span class="verified"><i class="fas fa-circle-check"></i> Verified order</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card reveal reveal-delay-2">
+                    <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-stroke"></i></div>
+                    <p class="review-text">"Ordered the creamy spinach for a vegetarian friend and everyone ended up stealing slices. Great options even if you don't eat meat."</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">AL</div>
+                        <div class="reviewer-info">
+                            <strong>Angela Lim</strong>
+                            <span>Pasig City</span>
+                            <span class="verified"><i class="fas fa-circle-check"></i> Verified order</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="fake-data-note">*Sample testimonials for demo purposes</p>
+        </div>
+    </section>
+
+    <!-- ============ CTA ============ -->
+    <section class="section cta">
+        <div class="container cta-content">
+            <span class="section-eyebrow centered" style="color:var(--light-red);">Ready When You Are</span>
+            <h2>Hungry? Your pizza is <span>one tap away</span></h2>
+            <p>Call any branch, order online, or drop by for pickup. Freshly-made handstretch dough waiting for you.</p>
+            <div class="cta-actions">
+                <a href="#menu" class="btn btn-primary"><i class="fas fa-pizza-slice"></i> Start Your Order</a>
+                <a href="tel:+639123456789" class="btn btn-ghost"><i class="fas fa-phone"></i> Call a Branch</a>
+            </div>
+            <div class="cta-phone">
+                <span>Hotline:</span>
+                <a href="tel:+639123456789">+63 912 345 6789</a>
+                <span>•</span>
+                <span>Open daily 10AM – 10PM</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ NEWSLETTER ============ -->
+    <section class="section newsletter">
+        <div class="container newsletter-box">
+            <div class="reveal">
+                <span class="section-eyebrow">Stay Updated</span>
+                <h3>Get <span>15% off</span> your first order</h3>
+                <p>Subscribe for exclusive deals, new flavors and branch openings. We only email when it's worth it.</p>
+            </div>
+            <div class="reveal reveal-delay-1">
+                <form class="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter(this);">
+                    <input type="email" placeholder="your@email.com" required aria-label="Email address">
+                    <button type="submit">Get My Discount</button>
+                </form>
+                <p class="newsletter-note">*Sample form — no data is collected in this prototype</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <img class="logo-img" src="img/img.png" alt="El Dorado's Pizza Logo">
+                        <span class="logo-text">EL DORADO'S<small>Pizza Kitchen</small></span>
+                    </div>
+                    <p>Freshly-made handstretch dough. The most mouthwatering and affordable pizza in town — served with pride since 1995.</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#story">Our Story</a></li>
+                        <li><a href="#menu">Full Menu</a></li>
+                        <li><a href="#features">Why Choose Us</a></li>
+                        <li><a href="#reviews">Reviews</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-phone"></i><a href="tel:+639123456789">+63 912 345 6789</a></li>
+                        <li><i class="fas fa-envelope"></i><a href="mailto:hello@eldoradospizza.com">hello@eldoradospizza.com</a></li>
+                        <li><i class="fas fa-location-dot"></i><span>123 Pizza Street, Manila, Philippines</span></li>
+                        <li><i class="fas fa-truck-fast"></i><span>Free delivery on large orders</span></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Opening Hours</h4>
+                    <div class="footer-hours"><span>Monday – Thursday</span><span>10:00 AM – 9:00 PM</span></div>
+                    <div class="footer-hours"><span>Friday – Saturday</span><span>10:00 AM – 10:00 PM</span></div>
+                    <div class="footer-hours"><span>Sunday</span><span>11:00 AM – 9:00 PM</span></div>
+                    <div class="footer-hours"><span>Holidays</span><span>Open</span></div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 El Dorado's Pizza. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Allergen Info</a>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <!-- Cart Sidebar -->
-    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h3><i class="fas fa-shopping-cart"></i> Your Order</h3>
-            <button class="close-cart" onclick="closeCart()">&times;</button>
+    <!-- ============ CART DRAWER ============ -->
+    <div class="overlay" id="overlay" onclick="closeAll()"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart">
+        <div class="drawer-head">
+            <h3><i class="fas fa-shopping-bag"></i> Your Order</h3>
+            <button class="drawer-close" onclick="closeCart()" aria-label="Close cart">&times;</button>
         </div>
-        <div class="cart-items" id="cartItems">
-            <div class="empty-cart">
-                <i class="fas fa-shopping-basket"></i>
-                <p>Your cart is empty</p>
-            </div>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total">
-                <span>Total:</span>
-                <span id="cartTotal">₱0</span>
-            </div>
-            <button class="checkout-btn" onclick="checkout()">
-                <i class="fas fa-check"></i> Proceed to Checkout
+        <div class="drawer-body" id="cartItems"></div>
+        <div class="drawer-foot">
+            <div class="summary-row"><span>Subtotal</span><span id="subtotal">₱0</span></div>
+            <div class="summary-row"><span>Delivery</span><span class="free">FREE</span></div>
+            <div class="summary-row"><span>Service fee</span><span>₱0</span></div>
+            <div class="summary-row total"><span>Total</span><span id="cartTotal">₱0</span></div>
+            <button class="checkout-btn" id="checkoutBtn" onclick="checkout()" disabled>
+                <i class="fas fa-lock"></i> Proceed to Checkout
             </button>
         </div>
-    </div>
+    </aside>
 
-    <!-- Size Modal -->
-    <div class="size-modal" id="sizeModal">
-        <h3>Select Size</h3>
-        <div class="size-options">
-            <div class="size-option" data-size="small" onclick="selectSize('small')">
-                <h4>Small</h4>
-                <p id="smallPrice">₱189</p>
-            </div>
-            <div class="size-option" data-size="large" onclick="selectSize('large')">
-                <h4>Large</h4>
-                <p id="largePrice">₱399</p>
+    <!-- ============ SIZE MODAL ============ -->
+    <div class="modal-backdrop" id="sizeModal" onclick="if(event.target===this)closeSizeModal()">
+        <div class="modal">
+            <button class="modal-close" onclick="closeSizeModal()" aria-label="Close">&times;</button>
+            <div class="modal-icon"><i class="fas fa-ruler-combined"></i></div>
+            <h3>Choose Your Size</h3>
+            <p id="sizeModalItem">Select the perfect size for your pizza.</p>
+            <div class="size-options">
+                <div class="size-option" onclick="selectSize('small')">
+                    <div class="size-name">Small</div>
+                    <div class="size-price" id="smallPrice">₱189</div>
+                    <div class="size-dim">7 inches · 4 slices</div>
+                </div>
+                <div class="size-option" onclick="selectSize('large')">
+                    <div class="size-name">Large</div>
+                    <div class="size-price" id="largePrice">₱399</div>
+                    <div class="size-dim">12 inches · 8 slices</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Scroll to Top -->
-    <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+    <!-- ============ CHECKOUT SUCCESS MODAL ============ -->
+    <div class="modal-backdrop" id="successModal" onclick="if(event.target===this)closeSuccessModal()">
+        <div class="modal" style="text-align:center;">
+            <button class="modal-close" onclick="closeSuccessModal()" aria-label="Close">&times;</button>
+            <div class="modal-icon" style="background:linear-gradient(135deg, rgba(40,167,69,.14), rgba(40,167,69,.04)); color:#28a745;">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3>Order Confirmed!</h3>
+            <p id="successMessage">Thank you for your order. Your pizza is being prepared.</p>
+            <div style="background:var(--light-gray); border-radius:16px; padding:1.2rem; margin-bottom:1.5rem; text-align:left;">
+                <div class="summary-row"><span>Order number</span><strong id="orderNumber" style="color:var(--navy);">#EDP-0000</strong></div>
+                <div class="summary-row"><span>Estimated delivery</span><strong style="color:var(--navy);">30–40 mins</strong></div>
+                <div class="summary-row" style="margin-bottom:0;"><span>Total paid</span><strong id="successTotal" style="color:var(--primary-red);">₱0</strong></div>
+            </div>
+            <button class="btn btn-dark" style="width:100%;" onclick="closeSuccessModal()">Continue Browsing</button>
+        </div>
+    </div>
 
     <!-- Toast -->
     <div class="toast" id="toast">
-        <i class="fas fa-check-circle"></i>
-        <span id="toastMessage">Item added to cart!</span>
+        <i class="fas fa-circle-check"></i>
+        <span id="toastMessage">Item added to cart</span>
     </div>
 
+    <!-- Scroll to top -->
+    <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <script>
-        // Menu Data
+        /* ============ MENU DATA ============ */
         const menuItems = [
-            // PIZZA
-            { id: 1, name: "Ham and Cheese", category: "pizza", icon: "🍕", description: "Sweet Ham and Mozzarella Cheese", prices: { small: 189, large: 399 }, badges: ["best-seller"] },
-            { id: 2, name: "Bacon and Cheese", category: "pizza", icon: "🍕", description: "Bacon and Mozzarella Cheese", prices: { small: 189, large: 399 } },
-            { id: 3, name: "Pepperoni Cheese", category: "pizza", icon: "🍕", description: "Pepperoni and Mozzarella Cheese", prices: { small: 189, large: 399 } },
-            { id: 4, name: "Margarita", category: "pizza", icon: "🍕", description: "Mozzarella Cheese Only", prices: { small: 189, large: 399 }, badges: ["no-pork"] },
-            { id: 5, name: "Hawaiian", category: "pizza", icon: "🍕", description: "Sweet Ham, Pineapple & Mozzarella Cheese", prices: { small: 199, large: 425 }, badges: ["best-seller"] },
-            { id: 6, name: "Veggie Pizza", category: "pizza", icon: "🥦", description: "Tomato, White Onion, Green Pepper, Fresh Chili, Mozzarella Cheese", prices: { small: 209, large: 479 }, badges: ["no-pork"] },
-            { id: 7, name: "Hot and Spicy", category: "pizza", icon: "🌶️", description: "Beef, Tomato, White Onion, Fresh Chili, and Mozzarella Cheese", prices: { small: 209, large: 479 }, badges: ["no-pork"] },
-            { id: 8, name: "Meat Pizza", category: "pizza", icon: "🥩", description: "Beef Toppings, Sweet Ham, Pepperoni and Mozzarella Cheese", prices: { small: 209, large: 479 } },
-            { id: 9, name: "Sisig Pizza", category: "pizza", icon: "🍖", description: "Pork Sisig, White Onion, Fresh Chili, Mozzarella Cheese, Mayonnaise on Top", prices: { small: 209, large: 479 }, badges: ["best-seller"] },
-            { id: 10, name: "Tuna Pizza", category: "pizza", icon: "🐟", description: "Tuna, Fresh Tomato, White onion, Green Pepper, and Mozzarella Cheese", prices: { small: 209, large: 479 }, badges: ["no-pork"] },
-            { id: 11, name: "Supreme Only", category: "pizza", icon: "⭐", description: "Beef, White onion, Green Pepper, Mushroom and Mozzarella Cheese", prices: { small: 209, large: 499 }, badges: ["no-pork"] },
-            { id: 12, name: "Super Supreme", category: "pizza", icon: "🌟", description: "Beef, Sweet Ham, Pepperoni White onion, Green Pepper, Mushroom and Mozzarella Cheese", prices: { small: 209, large: 499 }, badges: ["best-seller"] },
-            { id: 13, name: "Creamy Spinach", category: "pizza", icon: "🥬", description: "Fresh Spinach, Creamcheese, Parmesan Cheese, Sour & Cream, and Mozzarella Cheese", prices: { small: 209, large: 499 }, badges: ["best-seller", "no-pork"] },
-            { id: 14, name: "Seafood", category: "pizza", icon: "🦐", description: "Marinated Shrimp and Calamares, Fresh Garlic, Mushroom, and Mozzarella Cheese", prices: { small: 209, large: 499 }, badges: ["no-pork"] },
-            { id: 15, name: "Chicken Supreme", category: "pizza", icon: "🍗", description: "White sauce, Marinated Chicken, White onion, Mushroom, Green Pepper and Mozzarella cheese", prices: { small: 209, large: 499 } },
-            { id: 16, name: "Beef Deluxe", category: "pizza", icon: "🥩", description: "Marinated Beef, Onion, Tomato, Mozzarella Cheese and Cheese Sauce on Top", prices: { small: 229, large: 529 }, badges: ["new"] },
-            
-            // PASTA
-            { id: 17, name: "Lasagna with Garlic Bread", category: "pasta", icon: "🍝", description: "Classic lasagna with garlic bread", prices: { regular: 179 }, badges: ["best-seller"] },
-            { id: 18, name: "Fettucine Pasta with Garlic Bread", category: "pasta", icon: "🍝", description: "Creamy fettucine with garlic bread", prices: { regular: 179 }, badges: ["best-seller"] },
-            { id: 19, name: "Tuna Pasta with Garlic Bread", category: "pasta", icon: "🐟", description: "Tuna pasta with garlic bread", prices: { regular: 179 }, badges: ["no-pork"] },
-            { id: 20, name: "Chicken Baked Pasta with Garlic Bread", category: "pasta", icon: "🍗", description: "Chicken baked pasta with garlic bread", prices: { regular: 179 }, badges: ["no-pork"] },
-            
-            // SIDES & CRUST
-            { id: 21, name: "Stuffed Hotdog", category: "sides", icon: "🌭", description: "Stuffed hotdog crust", prices: { large: 569 } },
-            { id: 22, name: "Stuffed Cheese", category: "sides", icon: "🧀", description: "Stuffed cheese crust", prices: { large: 619 } },
-            { id: 23, name: "Mozzarella Cheese", category: "sides", icon: "🧀", description: "Extra mozzarella cheese", prices: { regular: 100 } },
-            { id: 24, name: "Any Toppings", category: "sides", icon: "🍕", description: "Add any topping", prices: { regular: 35 } },
-            { id: 25, name: "Caesar Salad", category: "sides", icon: "🥗", description: "Fresh caesar salad", prices: { regular: 149 }, badges: ["best-seller"] },
-            { id: 26, name: "Fries (220g)", category: "sides", icon: "🍟", description: "Crispy fries", prices: { regular: 89 } },
-            { id: 27, name: "Potato Wedges (230g)", category: "sides", icon: "🥔", description: "Crispy potato wedges", prices: { regular: 129 } },
-            { id: 28, name: "Calamares (100g)", category: "sides", icon: "🦑", description: "Fried calamares", prices: { regular: 149 } },
-            { id: 29, name: "Garlic Bread (4pcs)", category: "sides", icon: "🍞", description: "Garlic bread slices", prices: { regular: 119 } },
-            { id: 30, name: "Buffalo Wings (7pcs)", category: "sides", icon: "🍗", description: "Spicy buffalo wings", prices: { regular: 249 } },
-            
-            // DESSERTS
-            { id: 31, name: "Nutty Nutella", category: "desserts", icon: "🍫", description: "Nutella dessert pizza", prices: { regular: 159 } },
-            { id: 32, name: "Mango Nutella", category: "desserts", icon: "🥭", description: "Mango with Nutella", prices: { regular: 159 } },
-            { id: 33, name: "Cassava Solo", category: "desserts", icon: "🍠", description: "Cassava dessert", prices: { regular: 80 }, badges: ["best-seller"] },
-            { id: 34, name: "Cassava Platter", category: "desserts", icon: "🍠", description: "Cassava platter", prices: { regular: 700 } },
-            { id: 35, name: "Ube Halaya", category: "desserts", icon: "🟣", description: "Ube halaya dessert", prices: { regular: 80 } },
-            
-            // DRINKS
-            { id: 36, name: "Soda Small", category: "drinks", icon: "🥤", description: "Small soda", prices: { regular: 25 } },
-            { id: 37, name: "Soda 1.5 Liter", category: "drinks", icon: "🥤", description: "Large soda bottle", prices: { regular: 99 } },
-            { id: 38, name: "Bottled Water", category: "drinks", icon: "💧", description: "Bottled water", prices: { regular: 25 } },
-            { id: 39, name: "Mango Shake", category: "drinks", icon: "🥭", description: "Fresh mango shake", prices: { regular: 89 } },
-            { id: 40, name: "Guyabano Shake", category: "drinks", icon: "🥝", description: "Guyabano shake", prices: { regular: 89 } },
-            { id: 41, name: "Avocado Shake", category: "drinks", icon: "🥑", description: "Avocado shake (seasonal)", prices: { regular: 89 } }
+            { id: 1, name: "Ham and Cheese", category: "pizza", icon: "🍕", description: "Sweet ham layered over a bed of melted mozzarella on our signature handstretch crust.", prices: { small: 189, large: 399 }, badges: ["best-seller"] },
+            { id: 2, name: "Bacon and Cheese", category: "pizza", icon: "🥓", description: "Crispy bacon bits with rich, stretchy mozzarella cheese.", prices: { small: 189, large: 399 } },
+            { id: 3, name: "Pepperoni Cheese", category: "pizza", icon: "🍕", description: "Classic pepperoni and mozzarella — the timeless favorite.", prices: { small: 189, large: 399 }, badges: ["best-seller"] },
+            { id: 4, name: "Margarita", category: "pizza", icon: "🍅", description: "Simple, honest margherita — mozzarella cheese only.", prices: { small: 189, large: 399 }, badges: ["no-pork"] },
+            { id: 5, name: "Hawaiian", category: "pizza", icon: "🍍", description: "Sweet ham, juicy pineapple and mozzarella — sweet meets savory.", prices: { small: 199, large: 425 }, badges: ["best-seller"] },
+            { id: 6, name: "Veggie Pizza", category: "pizza", icon: "🥦", description: "Tomato, white onion, green pepper, fresh chili and mozzarella.", prices: { small: 209, large: 479 }, badges: ["no-pork"] },
+            { id: 7, name: "Hot and Spicy", category: "pizza", icon: "🌶️", description: "Beef, tomato, white onion, fresh chili and mozzarella — bring the heat.", prices: { small: 209, large: 479 }, badges: ["no-pork"] },
+            { id: 8, name: "Meat Pizza", category: "pizza", icon: "🥩", description: "Beef toppings, sweet ham, pepperoni and mozzarella. A meat lover's dream.", prices: { small: 209, large: 479 } },
+            { id: 9, name: "Sisig Pizza", category: "pizza", icon: "🍖", description: "Pork sisig, white onion, fresh chili, mozzarella and a creamy mayo finish.", prices: { small: 209, large: 479 }, badges: ["best-seller"] },
+            { id: 10, name: "Tuna Pizza", category: "pizza", icon: "🐟", description: "Tuna, fresh tomato, white onion, green pepper and mozzarella.", prices: { small: 209, large: 479 }, badges: ["no-pork"] },
+            { id: 11, name: "Supreme Only", category: "pizza", icon: "⭐", description: "Beef, white onion, green pepper, mushroom and mozzarella.", prices: { small: 209, large: 499 }, badges: ["no-pork"] },
+            { id: 12, name: "Super Supreme", category: "pizza", icon: "🌟", description: "Beef, sweet ham, pepperoni, white onion, green pepper, mushroom and mozzarella.", prices: { small: 209, large: 499 }, badges: ["best-seller"] },
+            { id: 13, name: "Creamy Spinach", category: "pizza", icon: "🥬", description: "Fresh spinach, cream cheese, parmesan, sour cream and mozzarella.", prices: { small: 209, large: 499 }, badges: ["best-seller", "no-pork"] },
+            { id: 14, name: "Seafood", category: "pizza", icon: "🦐", description: "Marinated shrimp and calamares, fresh garlic, mushroom and mozzarella.", prices: { small: 209, large: 499 }, badges: ["no-pork"] },
+            { id: 15, name: "Chicken Supreme", category: "pizza", icon: "🍗", description: "White sauce, marinated chicken, white onion, mushroom, green pepper and mozzarella.", prices: { small: 209, large: 499 } },
+            { id: 16, name: "Beef Deluxe", category: "pizza", icon: "🍔", description: "Marinated beef, onion, tomato, mozzarella and cheese sauce drizzle on top.", prices: { small: 229, large: 529 }, badges: ["new"] },
+
+            { id: 17, name: "Lasagna with Garlic Bread", category: "pasta", icon: "🍝", description: "Classic layered lasagna served with warm garlic bread.", prices: { regular: 179 }, badges: ["best-seller"] },
+            { id: 18, name: "Fettucine Pasta with Garlic Bread", category: "pasta", icon: "🍜", description: "Creamy fettucine Alfredo with a side of garlic bread.", prices: { regular: 179 }, badges: ["best-seller"] },
+            { id: 19, name: "Tuna Pasta with Garlic Bread", category: "pasta", icon: "🐟", description: "Savory tuna pasta tossed in our house sauce with garlic bread.", prices: { regular: 179 }, badges: ["no-pork"] },
+            { id: 20, name: "Chicken Baked Pasta with Garlic Bread", category: "pasta", icon: "🍗", description: "Baked chicken pasta with bubbling cheese on top and garlic bread.", prices: { regular: 179 }, badges: ["no-pork"] },
+
+            { id: 21, name: "Stuffed Hotdog Crust", category: "sides", icon: "🌭", description: "Large pizza crust stuffed with hotdog and cheese.", prices: { large: 569 } },
+            { id: 22, name: "Stuffed Cheese Crust", category: "sides", icon: "🧀", description: "Large pizza crust oozing with melted mozzarella.", prices: { large: 619 } },
+            { id: 23, name: "Extra Mozzarella Cheese", category: "sides", icon: "🧀", description: "Add an extra layer of premium mozzarella to any pizza.", prices: { regular: 100 } },
+            { id: 24, name: "Any Extra Toppings", category: "sides", icon: "🍕", description: "Add any single topping to your pizza.", prices: { regular: 35 } },
+            { id: 25, name: "Caesar Salad", category: "sides", icon: "🥗", description: "Fresh romaine, parmesan shavings and classic caesar dressing.", prices: { regular: 149 }, badges: ["best-seller"] },
+            { id: 26, name: "Crispy Fries (220g)", category: "sides", icon: "🍟", description: "Golden, salted and crispy fries. Perfect pizza sidekick.", prices: { regular: 89 } },
+            { id: 27, name: "Potato Wedges (230g)", category: "sides", icon: "🥔", description: "Seasoned skin-on potato wedges, crispy outside, fluffy inside.", prices: { regular: 129 } },
+            { id: 28, name: "Calamares (100g)", category: "sides", icon: "🦑", description: "Golden fried squid rings with dipping sauce.", prices: { regular: 149 } },
+            { id: 29, name: "Garlic Bread (4pcs)", category: "sides", icon: "🍞", description: "Warm, buttery garlic bread slices.", prices: { regular: 119 } },
+            { id: 30, name: "Buffalo Wings (7pcs)", category: "sides", icon: "🍗", description: "Spicy buffalo wings glazed in our signature sauce.", prices: { regular: 249 } },
+
+            { id: 31, name: "Nutty Nutella", category: "desserts", icon: "🍫", description: "Warm dessert pizza drizzled with nutella and toasted nuts.", prices: { regular: 159 } },
+            { id: 32, name: "Mango Nutella", category: "desserts", icon: "🥭", description: "Sweet mangoes paired with rich nutella on warm dough.", prices: { regular: 159 } },
+            { id: 33, name: "Cassava Solo", category: "desserts", icon: "🍠", description: "Traditional Filipino cassava cake slice.", prices: { regular: 80 }, badges: ["best-seller"] },
+            { id: 34, name: "Cassava Platter", category: "desserts", icon: "🍰", description: "Shareable platter of our house-made cassava cake.", prices: { regular: 700 } },
+            { id: 35, name: "Ube Halaya", category: "desserts", icon: "🟣", description: "Creamy purple yam jam — a Filipino classic.", prices: { regular: 80 } },
+
+            { id: 36, name: "Soda Small", category: "drinks", icon: "🥤", description: "Chilled small bottle of soda.", prices: { regular: 25 } },
+            { id: 37, name: "Soda 1.5 Liter", category: "drinks", icon: "🍾", description: "Sharing-size 1.5 liter soda bottle.", prices: { regular: 99 } },
+            { id: 38, name: "Bottled Water", category: "drinks", icon: "💧", description: "Chilled purified bottled water.", prices: { regular: 25 } },
+            { id: 39, name: "Mango Shake", category: "drinks", icon: "🥭", description: "Thick, icy fresh mango shake.", prices: { regular: 89 } },
+            { id: 40, name: "Guyabano Shake", category: "drinks", icon: "🥝", description: "Creamy soursop shake made fresh.", prices: { regular: 89 } },
+            { id: 41, name: "Avocado Shake", category: "drinks", icon: "🥑", description: "Rich and creamy avocado shake (seasonal).", prices: { regular: 89 } }
         ];
 
-        // Cart State
+        /* ============ STATE ============ */
         let cart = [];
         let currentCategory = 'all';
-        let selectedItem = null;
+        let searchTerm = '';
+        let pendingItem = null;
 
-        // Initialize
+        /* ============ INIT ============ */
         document.addEventListener('DOMContentLoaded', () => {
-            // Hide preloader
-            setTimeout(() => {
-                document.getElementById('preloader').classList.add('hidden');
-            }, 1500);
+            // Preloader
+            window.addEventListener('load', () => setTimeout(() => document.getElementById('preloader').classList.add('hidden'), 700));
+            setTimeout(() => document.getElementById('preloader').classList.add('hidden'), 3000);
 
-            // Render menu
             renderMenu();
+            setupTabs();
+            setupSearch();
+            setupScroll();
+            setupRevealObserver();
+            setupMobileMenu();
+            setupNavHighlight();
+            setupScrollTop();
+            setupCounters();
 
-            // Setup category tabs
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') closeAll();
+            });
+        });
+
+        /* ============ RENDER MENU ============ */
+        function getFiltered() {
+            return menuItems.filter(item => {
+                const inCat = currentCategory === 'all' || item.category === currentCategory;
+                const inSearch = !searchTerm ||
+                    item.name.toLowerCase().includes(searchTerm) ||
+                    item.description.toLowerCase().includes(searchTerm) ||
+                    item.category.toLowerCase().includes(searchTerm);
+                return inCat && inSearch;
+            });
+        }
+
+        function renderMenu() {
+            const grid = document.getElementById('menuGrid');
+            const filtered = getFiltered();
+
+            const info = document.getElementById('resultsInfo');
+            info.innerHTML = `<strong>${filtered.length}</strong> item${filtered.length !== 1 ? 's' : ''} available`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-pizza-slice"></i>
+                        <h3>No items found</h3>
+                        <p>Try a different search term or category.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => `
+                <article class="menu-card" data-id="${item.id}">
+                    <div class="card-visual">
+                        <span class="card-emoji">${item.icon}</span>
+                        ${item.badges ? `
+                            <div class="card-badges">
+                                ${item.badges.includes('best-seller') ? '<span class="badge best-seller">Best Seller</span>' : ''}
+                                ${item.badges.includes('no-pork') ? '<span class="badge no-pork">No Pork</span>' : ''}
+                                ${item.badges.includes('new') ? '<span class="badge new">New</span>' : ''}
+                            </div>` : ''}
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">${item.name}</h3>
+                        <p class="card-desc">${item.description}</p>
+                        <div class="card-footer">
+                            <div class="price-stack">
+                                ${Object.entries(item.prices).map(([size, price]) => `
+                                    <div class="price-tag">
+                                        <small>${size === 'regular' ? 'Regular' : size}</small>
+                                        ₱${price}
+                                    </div>`).join('')}
+                            </div>
+                            <button class="add-btn" onclick="addToCart(${item.id}, event)" aria-label="Add ${item.name} to cart">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+
+            // Stagger reveal
+            requestAnimationFrame(() => {
+                grid.querySelectorAll('.menu-card').forEach((card, i) => {
+                    setTimeout(() => card.classList.add('visible'), i * 45);
+                });
+            });
+        }
+
+        /* ============ TABS ============ */
+        function setupTabs() {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1754,230 +2878,330 @@
                     renderMenu();
                 });
             });
-
-        // Scroll effects
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            const scrollTop = document.getElementById('scrollTop');
-            const banner = document.querySelector('.prototype-banner');
-            
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-                scrollTop.classList.add('visible');
-                banner.style.transform = 'translateY(-100%)';
-            } else {
-                navbar.classList.remove('scrolled');
-                scrollTop.classList.remove('visible');
-                banner.style.transform = 'translateY(0)';
-            }
-        });
-
-        // Animated Counters
-        const animateCounters = () => {
-            const counters = document.querySelectorAll('.stat-number');
-            counters.forEach(counter => {
-                const target = parseInt(counter.getAttribute('data-target'));
-                const duration = 2000;
-                const increment = target / (duration / 16);
-                let current = 0;
-
-                const updateCounter = () => {
-                    current += increment;
-                    if (current < target) {
-                        counter.textContent = Math.floor(current).toLocaleString();
-                        requestAnimationFrame(updateCounter);
-                    } else {
-                        counter.textContent = target.toLocaleString() + (target === 98 ? '%' : '+');
-                    }
-                };
-                updateCounter();
-            });
-        };
-
-        // Intersection Observer for animations
-        const observerOptions = { threshold: 0.3 };
-        const statsObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounters();
-                    statsObserver.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        const statsSection = document.querySelector('.stats');
-        if (statsSection) {
-            statsObserver.observe(statsSection);
         }
-    });
 
-        // Render Menu
-        function renderMenu() {
-            const grid = document.getElementById('menuGrid');
-            const filtered = currentCategory === 'all' 
-                ? menuItems 
-                : menuItems.filter(item => item.category === currentCategory);
-            
-            grid.innerHTML = filtered.map((item, index) => `
-                <div class="menu-card" style="animation-delay: ${index * 0.1}s">
-                    <div class="card-image">
-                        <span>${item.icon}</span>
-                        ${item.badges ? `
-                            <div class="card-badges">
-                                ${item.badges.includes('best-seller') ? '<span class="badge best-seller">Best Seller</span>' : ''}
-                                ${item.badges.includes('no-pork') ? '<span class="badge no-pork">No Pork</span>' : ''}
-                                ${item.badges.includes('new') ? '<span class="badge new">New</span>' : ''}
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div class="card-content">
-                        <h3>${item.name}</h3>
-                        <p>${item.description}</p>
-                        <div class="price-section">
-                            <div class="prices">
-                                ${Object.entries(item.prices).map(([size, price]) => `
-                                    <div class="price">
-                                        <small>${size.charAt(0).toUpperCase() + size.slice(1)}</small>
-                                        ₱${price}
-                                    </div>
-                                `).join('')}
-                            </div>
-                            <button class="add-btn" onclick="addToCart(${item.id})">
-                                <i class="fas fa-plus"></i>
-                            </button>
+        /* ============ SEARCH ============ */
+        function setupSearch() {
+            const input = document.getElementById('searchInput');
+            let debounce;
+            input.addEventListener('input', () => {
+                clearTimeout(debounce);
+                debounce = setTimeout(() => {
+                    searchTerm = input.value.trim().toLowerCase();
+                    renderMenu();
+                }, 180);
+            });
+        }
+
+        /* ============ SCROLL EFFECTS ============ */
+        function setupScroll() {
+            const navbar = document.getElementById('navbar');
+            const banner = document.getElementById('protoBanner');
+            const progress = document.getElementById('scrollProgress');
+
+            const onScroll = () => {
+                const y = window.scrollY;
+
+                // Progress bar
+                const docH = document.documentElement.scrollHeight - window.innerHeight;
+                progress.style.width = docH > 0 ? (y / docH) * 100 + '%' : '0%';
+
+                // Navbar
+                if (y > 40) {
+                    navbar.classList.add('scrolled');
+                    banner.style.transform = 'translateY(-100%)';
+                } else {
+                    navbar.classList.remove('scrolled');
+                    banner.style.transform = 'translateY(0)';
+                }
+            };
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        }
+
+        /* ============ REVEAL ON SCROLL ============ */
+        function setupRevealObserver() {
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        e.target.classList.add('visible');
+                        obs.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+            document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+        }
+
+        /* ============ COUNTERS ============ */
+        function setupCounters() {
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.querySelectorAll('.counter').forEach(runCounter);
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.4 });
+
+            const stats = document.querySelector('.stats');
+            if (stats) obs.observe(stats);
+        }
+
+        function runCounter(el) {
+            const target = parseInt(el.dataset.target, 10);
+            const duration = 1900;
+            const start = performance.now();
+
+            const tick = now => {
+                const p = Math.min((now - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.floor(eased * target).toLocaleString();
+                if (p < 1) requestAnimationFrame(tick);
+                else el.textContent = target.toLocaleString();
+            };
+            requestAnimationFrame(tick);
+        }
+
+        /* ============ MOBILE MENU ============ */
+        function setupMobileMenu() {
+            const burger = document.getElementById('hamburger');
+            const menu = document.getElementById('mobileMenu');
+
+            burger.addEventListener('click', () => {
+                burger.classList.toggle('open');
+                menu.classList.toggle('open');
+            });
+
+            menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+                burger.classList.remove('open');
+                menu.classList.remove('open');
+            }));
+        }
+
+        /* ============ NAV HIGHLIGHT ============ */
+        function setupNavHighlight() {
+            const links = [...document.querySelectorAll('.nav-links a')];
+            const sections = links.map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        links.forEach(l => l.classList.remove('active'));
+                        const active = links.find(l => l.getAttribute('href') === '#' + entry.target.id);
+                        if (active) active.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.3, rootMargin: '-100px 0px -50% 0px' });
+
+            sections.forEach(s => obs.observe(s));
+        }
+
+        /* ============ SCROLL TOP ============ */
+        function setupScrollTop() {
+            const btn = document.getElementById('scrollTop');
+            btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+            window.addEventListener('scroll', () => {
+                btn.classList.toggle('visible', window.scrollY > 600);
+            }, { passive: true });
+        }
+
+        /* ============ CART ============ */
+        function addToCart(itemId, evt) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            if (item.prices.small) {
+                pendingItem = item;
+                document.getElementById('sizeModalItem').textContent = item.name;
+                document.getElementById('smallPrice').textContent = '₱' + item.prices.small;
+                document.getElementById('largePrice').textContent = '₱' + item.prices.large;
+                document.getElementById('sizeModal').classList.add('open');
+                document.body.style.overflow = 'hidden';
+                return;
+            }
+
+            pushToCart(item, Object.keys(item.prices)[0], Object.values(item.prices)[0]);
+
+            if (evt) {
+                const btn = evt.currentTarget;
+                btn.style.background = '#28a745';
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => {
+                    btn.style.background = '';
+                    btn.innerHTML = '<i class="fas fa-plus"></i>';
+                }, 900);
+            }
+        }
+
+        function selectSize(size) {
+            if (!pendingItem) return;
+            pushToCart(pendingItem, size, pendingItem.prices[size]);
+            pendingItem = null;
+            closeSizeModal();
+        }
+
+        function pushToCart(item, size, price) {
+            const existing = cart.find(c => c.id === item.id && c.size === size);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({
+                    key: item.id + '-' + size + '-' + Date.now(),
+                    id: item.id,
+                    name: item.name,
+                    icon: item.icon,
+                    size,
+                    price,
+                    qty: 1
+                });
+            }
+            renderCart();
+            showToast(`${item.name} (${size}) added to cart`);
+            bumpCart();
+        }
+
+        function bumpCart() {
+            const count = document.getElementById('cartCount');
+            count.classList.add('bump');
+            setTimeout(() => count.classList.remove('bump'), 300);
+        }
+
+        function changeQty(key, delta) {
+            const row = cart.find(c => c.key === key);
+            if (!row) return;
+            row.qty += delta;
+            if (row.qty <= 0) cart = cart.filter(c => c.key !== key);
+            renderCart();
+        }
+
+        function removeFromCart(key) {
+            cart = cart.filter(c => c.key !== key);
+            renderCart();
+            showToast('Item removed', true);
+        }
+
+        function renderCart() {
+            const wrap = document.getElementById('cartItems');
+            const totalQty = cart.reduce((s, c) => s + c.qty, 0);
+            const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+
+            document.getElementById('cartCount').textContent = totalQty;
+            document.getElementById('subtotal').textContent = '₱' + total.toLocaleString();
+            document.getElementById('cartTotal').textContent = '₱' + total.toLocaleString();
+            document.getElementById('checkoutBtn').disabled = cart.length === 0;
+
+            if (cart.length === 0) {
+                wrap.innerHTML = `
+                    <div class="drawer-empty">
+                        <i class="fas fa-basket-shopping"></i>
+                        <h4>Your cart is empty</h4>
+                        <p>Add something delicious from the menu.</p>
+                    </div>`;
+                return;
+            }
+
+            wrap.innerHTML = cart.map(c => `
+                <div class="cart-row">
+                    <div class="cart-thumb">${c.icon}</div>
+                    <div class="cart-info">
+                        <h4>${c.name}</h4>
+                        <div class="cart-meta">
+                            <span class="size-pill">${c.size}</span>
+                            <span>₱${c.price}</span>
                         </div>
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="changeQty('${c.key}', -1)" aria-label="Decrease">−</button>
+                            <span class="qty-num">${c.qty}</span>
+                            <button class="qty-btn" onclick="changeQty('${c.key}', 1)" aria-label="Increase">+</button>
+                        </div>
+                    </div>
+                    <div class="cart-side">
+                        <span class="cart-price">₱${(c.price * c.qty).toLocaleString()}</span>
+                        <button class="cart-remove" onclick="removeFromCart('${c.key}')" aria-label="Remove">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
-
-            // Animate cards
-            setTimeout(() => {
-                document.querySelectorAll('.menu-card').forEach((card, index) => {
-                    setTimeout(() => card.classList.add('visible'), index * 100);
-                });
-            }, 100);
         }
 
-        // Add to Cart
-        function addToCart(itemId) {
-            selectedItem = menuItems.find(item => item.id === itemId);
-            
-            if (selectedItem.prices.small) {
-                document.getElementById('smallPrice').textContent = `₱${selectedItem.prices.small}`;
-                document.getElementById('largePrice').textContent = `₱${selectedItem.prices.large}`;
-                document.getElementById('sizeModal').classList.add('open');
-            } else {
-                // Single size item
-                const cartItem = {
-                    ...selectedItem,
-                    selectedSize: Object.keys(selectedItem.prices)[0],
-                    selectedPrice: Object.values(selectedItem.prices)[0]
-                };
-                cart.push(cartItem);
-                updateCart();
-                showToast(`${selectedItem.name} added to cart!`);
-                
-                // Button animation
-                const btn = event.currentTarget;
-                btn.classList.add('added');
-                setTimeout(() => btn.classList.remove('added'), 300);
-            }
-        }
-
-        // Select Size
-        function selectSize(size) {
-            const cartItem = {
-                ...selectedItem,
-                selectedSize: size,
-                selectedPrice: selectedItem.prices[size]
-            };
-            cart.push(cartItem);
-            updateCart();
-            showToast(`${selectedItem.name} (${size}) added to cart!`);
-            document.getElementById('sizeModal').classList.remove('open');
-        }
-
-        // Update Cart
-        function updateCart() {
-            const cartCount = document.getElementById('cartCount');
-            const cartItems = document.getElementById('cartItems');
-            const cartTotal = document.getElementById('cartTotal');
-            
-            cartCount.textContent = cart.length;
-            
-            if (cart.length === 0) {
-                cartItems.innerHTML = `
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-basket"></i>
-                        <p>Your cart is empty</p>
-                    </div>
-                `;
-            } else {
-                cartItems.innerHTML = cart.map((item, index) => `
-                    <div class="cart-item">
-                        <div class="cart-item-icon">${item.icon}</div>
-                        <div class="cart-item-details">
-                            <h4>${item.name}</h4>
-                            <p class="size">${item.selectedSize}</p>
-                        </div>
-                        <span class="cart-item-price">₱${item.selectedPrice}</span>
-                        <button class="remove-item" onclick="removeFromCart(${index})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `).join('');
-            }
-            
-            const total = cart.reduce((sum, item) => sum + item.selectedPrice, 0);
-            cartTotal.textContent = `₱${total}`;
-        }
-
-        // Remove from Cart
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCart();
-        }
-
-        // Open/Close Cart
+        /* ============ DRAWER / MODALS ============ */
         function openCart() {
-            document.getElementById('cartSidebar').classList.add('open');
-            document.getElementById('cartOverlay').classList.add('open');
+            document.getElementById('cartDrawer').classList.add('open');
+            document.getElementById('overlay').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
         function closeCart() {
-            document.getElementById('cartSidebar').classList.remove('open');
-            document.getElementById('cartOverlay').classList.remove('open');
+            document.getElementById('cartDrawer').classList.remove('open');
+            document.getElementById('overlay').classList.remove('open');
             document.body.style.overflow = '';
         }
 
-        // Checkout
+        function closeSizeModal() {
+            document.getElementById('sizeModal').classList.remove('open');
+            pendingItem = null;
+            document.body.style.overflow = '';
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function closeAll() {
+            closeCart();
+            closeSizeModal();
+            closeSuccessModal();
+            document.body.style.overflow = '';
+        }
+
         function checkout() {
             if (cart.length === 0) {
-                showToast('Your cart is empty!');
+                showToast('Your cart is empty', true);
                 return;
             }
-            const total = cart.reduce((sum, item) => sum + item.selectedPrice, 0);
-            alert(`Order placed! Total: ₱${total}\n\nThank you for ordering from El Dorado's Pizza!`);
-            cart = [];
-            updateCart();
+            const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+            const orderNo = '#EDP-' + String(Math.floor(1000 + Math.random() * 9000));
+
             closeCart();
+            document.getElementById('orderNumber').textContent = orderNo;
+            document.getElementById('successTotal').textContent = '₱' + total.toLocaleString();
+            document.getElementById('successMessage').textContent =
+                `Thanks! Your order of ${cart.reduce((s, c) => s + c.qty, 0)} item(s) is being prepared fresh.`;
+
+            setTimeout(() => {
+                document.getElementById('successModal').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }, 300);
+
+            cart = [];
+            renderCart();
         }
 
-        // Show Toast
-        function showToast(message) {
-            const toast = document.getElementById('toast');
+        /* ============ NEWSLETTER ============ */
+        function subscribeNewsletter(form) {
+            const email = form.querySelector('input').value;
+            form.reset();
+            showToast(`Subscribed! Your 15% code: DORADO15`);
+        }
+
+        /* ============ TOAST ============ */
+        let toastTimer;
+        function showToast(message, warn = false) {
+            const t = document.getElementById('toast');
             document.getElementById('toastMessage').textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            t.classList.toggle('warn', warn);
+            t.querySelector('i').className = warn ? 'fas fa-circle-exclamation' : 'fas fa-circle-check';
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
         }
 
-        // Close size modal when clicking outside
-        document.getElementById('sizeModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('sizeModal')) {
-                document.getElementById('sizeModal').classList.remove('open');
-            }
-        });
+        // Init cart UI
+        renderCart();
     </script>
 </body>
 </html>
